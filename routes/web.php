@@ -24,3 +24,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::resource('products', AdminProductController::class);
     Route::resource('brands', AdminBrandController::class);
 });
+
+Route::get('/product', function () {
+    return view('product');
+});
