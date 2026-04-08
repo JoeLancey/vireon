@@ -8,6 +8,7 @@
     <p style="color:var(--muted);margin-bottom:1.5rem;">{{ $product->name }}</p>
 
     <div class="card" style="padding:2rem;">
+        {{-- EDIT FORM --}}
         <form method="POST" action="{{ route('admin.products.update', $product) }}" enctype="multipart/form-data">
             @csrf @method('PUT')
             @if($errors->any())
@@ -68,12 +69,19 @@
             <div style="margin-top:2rem;display:flex;gap:1rem;flex-wrap:wrap;">
                 <button type="submit" class="btn-accent" style="border:none;cursor:pointer;font-size:1rem;padding:0.75rem 2rem;">Save Changes</button>
                 <a href="{{ route('admin.products.index') }}" class="btn-outline">Cancel</a>
-                <form method="POST" action="{{ route('admin.products.destroy', $product) }}" style="margin-left:auto;" onsubmit="return confirm('Permanently delete this product?')">
-                    @csrf @method('DELETE')
-                    <button type="submit" style="background:none;border:1px solid #FF6B6B44;color:#FF6B6B;padding:0.75rem 1.5rem;border-radius:4px;cursor:pointer;">Delete Product</button>
-                </form>
             </div>
         </form>
+
+        {{-- DELETE FORM — outside the edit form --}}
+        <form method="POST" action="{{ route('admin.products.destroy', $product) }}"
+              style="margin-top:1rem;"
+              onsubmit="return confirm('Permanently delete {{ $product->name }}? This cannot be undone.')">
+            @csrf @method('DELETE')
+            <button type="submit" style="background:none;border:1px solid #FF6B6B44;color:#FF6B6B;padding:0.75rem 1.5rem;border-radius:4px;cursor:pointer;">
+                Delete Product
+            </button>
+        </form>
+
     </div>
 </div>
 @endsection
