@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Product;
 use App\Models\Brand;
+use App\Models\ProductImage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -31,6 +32,7 @@ class ProductController extends Controller {
             'category'    => 'required|in:footwear,apparel,accessories',
             'image'       => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
             'is_featured' => 'boolean',
+            'additional_images.*' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
         ]);
 
         if ($request->hasFile('image')) {
@@ -38,7 +40,17 @@ class ProductController extends Controller {
         }
 
         $validated['is_featured'] = $request->has('is_featured');
-        Product::create($validated);
+        $product = Product::create($validated);
+
+        if ($request->hasFile('additional_images')) {
+            foreach ($request->file('additional_images') as $image) {
+                $path = $image->store('products', 'public');
+                ProductImage::create([
+                    'product_id' => $product->id,
+                    'image_path' => $path
+                ]);
+            }
+        }
 
         return redirect()->route('admin.products.index')
             ->with('success', 'Product added successfully!');
@@ -59,6 +71,7 @@ class ProductController extends Controller {
             'category'    => 'required|in:footwear,apparel,accessories',
             'image'       => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
             'is_featured' => 'boolean',
+            'additional_images.*' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
         ]);
 
         if ($request->hasFile('image')) {
@@ -69,12 +82,30 @@ class ProductController extends Controller {
         $validated['is_featured'] = $request->has('is_featured');
         $product->update($validated);
 
+        if ($request->hasFile('additional_images')) {
+            foreach ($product->images as $oldImage) {
+                Storage::disk('public')->delete($oldImage->image_path);
+                $oldImage->delete();
+            }
+            foreach ($request->file('additional_images') as $image) {
+                $path = $image->store('products', 'public');
+                ProductImage::create([
+                    'product_id' => $product->id,
+                    'image_path' => $path
+                ]);
+            }
+        }
+
         return redirect()->route('admin.products.index')
             ->with('success', 'Product updated successfully!');
     }
 
     public function destroy(Product $product) {
         if ($product->image) Storage::disk('public')->delete($product->image);
+        foreach ($product->images as $img) {
+            Storage::disk('public')->delete($img->image_path);
+            $img->delete();
+        }
         $name = $product->name;
         $product->delete();
         return redirect()->route('admin.products.index')

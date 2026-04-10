@@ -64,11 +64,11 @@
                     <div class="card" style="overflow:hidden;transition:all 0.2s;"
                          onmouseover="this.style.borderColor='var(--accent)'"
                          onmouseout="this.style.borderColor='var(--border)'">
-                        <div style="background:#1A1A1A;height:180px;display:flex;align-items:center;justify-content:center;position:relative;">
+                        <div style="background:#1A1A1A;height:220px;overflow:hidden;position:relative;">
                             @if($product->image)
-                                <img src="{{ Storage::url($product->image) }}" alt="{{ $product->name }}" style="max-height:160px;max-width:100%;object-fit:contain;padding:0.5rem;">
+                                <img src="{{ Storage::url($product->image) }}" alt="{{ $product->name }}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;">
                             @else
-                                <span class="font-display" style="color:#333;font-size:2.5rem;">{{ substr($product->name,0,2) }}</span>
+                                <span class="font-display" style="color:#333;font-size:2.5rem;position:absolute;inset:0;display:flex;align-items:center;justify-content:center;">{{ substr($product->name,0,2) }}</span>
                             @endif
                             @if($product->is_featured)
                             <span style="position:absolute;top:0.5rem;right:0.5rem;background:var(--accent);color:#000;font-size:0.65rem;font-weight:700;padding:0.2rem 0.5rem;border-radius:3px;">FEATURED</span>

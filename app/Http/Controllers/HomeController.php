@@ -3,11 +3,27 @@ namespace App\Http\Controllers;
 
 use App\Models\Brand;
 use App\Models\Product;
+use Illuminate\Support\Facades\Storage;
 
 class HomeController extends Controller {
     public function index() {
         $brands   = Brand::withCount('products')->get();
         $featured = Product::with('brand')->where('is_featured', true)->take(6)->get();
-        return view('home.index', compact('brands', 'featured'));
+        $stats    = [
+            'total_products' => Product::count(),
+            'in_stock'       => Product::where('stock', '>', 0)->count(),
+            'out_of_stock'   => Product::where('stock', 0)->count(),
+            'total_brands'   => Brand::count(),
+        ];
+
+        // Pre-build hero data with URLs
+        $heroData = $featured->take(4)->map(fn($p) => [
+            'name'  => strtoupper($p->name),
+            'price' => '₱' . number_format($p->price, 2),
+            'brand' => strtoupper($p->brand->name),
+            'url'   => route('products.show', $p),
+        ])->values();
+
+        return view('home.index', compact('brands', 'featured', 'stats', 'heroData'));
     }
 }

@@ -6,13 +6,35 @@
     <a href="{{ route('products.index') }}" style="color:var(--muted);text-decoration:none;font-size:0.875rem;">← Back to Products</a>
 
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:3rem;margin-top:2rem;align-items:start;">
-        {{-- Image --}}
-        <div style="background:#161616;border:1px solid var(--border);border-radius:12px;padding:2rem;min-height:350px;display:flex;align-items:center;justify-content:center;">
-            @if($product->image)
-                <img src="{{ Storage::url($product->image) }}" alt="{{ $product->name }}" style="max-height:300px;max-width:100%;object-fit:contain;">
-            @else
-                <span class="font-display" style="color:#2A2A2A;font-size:5rem;">{{ substr($product->name,0,2) }}</span>
+
+        {{-- Image Gallery --}}
+        <div style="display:flex;gap:12px;align-items:flex-start;">
+
+            {{-- Main Image --}}
+            <div style="background:#161616;border:1px solid var(--border);border-radius:12px;overflow:hidden;flex:1;height:450px;">
+                @if($product->image)
+                    <img id="mainImage" src="{{ Storage::url($product->image) }}" alt="{{ $product->name }}" style="width:100%;height:100%;object-fit:cover;">
+                @else
+                    <div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;">
+                        <span class="font-display" style="color:#2A2A2A;font-size:5rem;">{{ substr($product->name,0,2) }}</span>
+                    </div>
+                @endif
+            </div>
+
+            {{-- Thumbnails (Right Side) --}}
+            @if($product->image || $product->images->count())
+            <div style="display:flex;flex-direction:column;gap:10px;">
+                @if($product->image)
+                <img src="{{ Storage::url($product->image) }}" onclick="changeImage(this)"
+                     style="width:80px;height:80px;object-fit:cover;border-radius:8px;border:2px solid var(--accent);cursor:pointer;">
+                @endif
+                @foreach($product->images as $img)
+                <img src="{{ Storage::url($img->image_path) }}" onclick="changeImage(this)"
+                     style="width:80px;height:80px;object-fit:cover;border-radius:8px;border:2px solid var(--border);cursor:pointer;">
+                @endforeach
+            </div>
             @endif
+
         </div>
 
         {{-- Details --}}
@@ -62,7 +84,11 @@
                      onmouseover="this.style.borderColor='var(--accent)'"
                      onmouseout="this.style.borderColor='var(--border)'">
                     <div style="background:#1A1A1A;height:140px;display:flex;align-items:center;justify-content:center;">
-                        <span class="font-display" style="color:#333;font-size:2rem;">{{ substr($rel->name,0,2) }}</span>
+                        @if($rel->image)
+                            <img src="{{ Storage::url($rel->image) }}" alt="{{ $rel->name }}" style="width:100%;height:100%;object-fit:cover;">
+                        @else
+                            <span class="font-display" style="color:#333;font-size:2rem;">{{ substr($rel->name,0,2) }}</span>
+                        @endif
                     </div>
                     <div style="padding:0.75rem;">
                         <p style="color:#fff;font-size:0.875rem;font-weight:500;margin-bottom:0.3rem;">{{ $rel->name }}</p>
@@ -74,5 +100,17 @@
         </div>
     </div>
     @endif
+
 </div>
+
+<script>
+    function changeImage(thumb) {
+        document.getElementById('mainImage').src = thumb.src;
+        document.querySelectorAll('[onclick="changeImage(this)"]').forEach(img => {
+            img.style.borderColor = 'var(--border)';
+        });
+        thumb.style.borderColor = 'var(--accent)';
+    }
+</script>
+
 @endsection

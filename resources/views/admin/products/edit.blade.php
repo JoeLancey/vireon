@@ -8,7 +8,6 @@
     <p style="color:var(--muted);margin-bottom:1.5rem;">{{ $product->name }}</p>
 
     <div class="card" style="padding:2rem;">
-        {{-- EDIT FORM --}}
         <form method="POST" action="{{ route('admin.products.update', $product) }}" enctype="multipart/form-data">
             @csrf @method('PUT')
             @if($errors->any())
@@ -60,6 +59,22 @@
                     <label for="image">{{ $product->image ? 'Replace Image' : 'Product Image' }}</label>
                     <input type="file" id="image" name="image" accept="image/*">
                 </div>
+
+                {{-- Additional Images (INSIDE the form) --}}
+                <div style="grid-column:1/-1;">
+                    @if($product->images->count())
+                    <label>Current Additional Images</label>
+                    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:0.75rem;">
+                        @foreach($product->images as $img)
+                        <img src="{{ Storage::url($img->image_path) }}" style="width:80px;height:80px;object-fit:cover;border-radius:6px;border:1px solid var(--border);">
+                        @endforeach
+                    </div>
+                    @endif
+                    <label>Replace Additional Images (up to 4)</label>
+                    <input type="file" name="additional_images[]" multiple accept="image/*" style="padding:0.6rem;cursor:pointer;">
+                    <p style="color:var(--muted);font-size:0.75rem;margin-top:0.3rem;">Uploading new images will replace the existing ones</p>
+                </div>
+
                 <div style="grid-column:1/-1;display:flex;align-items:center;gap:0.75rem;padding:0.75rem;background:#1A1A1A;border:1px solid var(--border);border-radius:6px;">
                     <input type="checkbox" id="is_featured" name="is_featured" value="1" {{ old('is_featured', $product->is_featured) ? 'checked' : '' }} style="width:auto;padding:0;accent-color:var(--accent);">
                     <label for="is_featured" style="margin:0;color:#fff;cursor:pointer;">Featured Product</label>
@@ -72,7 +87,7 @@
             </div>
         </form>
 
-        {{-- DELETE FORM — outside the edit form --}}
+        {{-- DELETE FORM --}}
         <form method="POST" action="{{ route('admin.products.destroy', $product) }}"
               style="margin-top:1rem;"
               onsubmit="return confirm('Permanently delete {{ $product->name }}? This cannot be undone.')">
@@ -81,7 +96,6 @@
                 Delete Product
             </button>
         </form>
-
     </div>
 </div>
 @endsection

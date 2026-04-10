@@ -2,86 +2,64 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Product;
 use App\Models\Brand;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
-class ProductController extends Controller {
-    public function index(Request $request) {
-        $brands   = Brand::all();
-        $query    = Product::with('brand');
-        if ($request->brand_id) $query->where('brand_id', $request->brand_id);
-        $products = $query->latest()->paginate(15);
-        return view('admin.products.index', compact('products', 'brands'));
+class BrandController extends Controller {
+    public function index() {
+        $brands = Brand::withCount('products')->latest()->paginate(15);
+        return view('admin.brands.index', compact('brands'));
     }
 
     public function create() {
-        $brands = Brand::all();
-        return view('admin.products.create', compact('brands'));
+        return view('admin.brands.create');
     }
 
     public function store(Request $request) {
         $validated = $request->validate([
-            'brand_id'    => 'required|exists:brands,id',
-            'name'        => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'price'       => 'required|numeric|min:0',
-            'stock'       => 'required|integer|min:0',
-            'category'    => 'required|in:footwear,apparel,accessories',
-            'image'       => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
-            'is_featured' => 'boolean',
+            'name'         => 'required|string|max:255|unique:brands,name',
+            'accent_color' => 'required|string|max:7',
+            'logo'         => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
         ]);
 
-        if ($request->hasFile('image')) {
-            $validated['image'] = $request->file('image')->store('products', 'public');
+        if ($request->hasFile('logo')) {
+            $validated['logo'] = $request->file('logo')->store('brands', 'public');
         }
 
-        $validated['is_featured'] = $request->has('is_featured');
-        Product::create($validated);
+        Brand::create($validated);
 
-        return redirect()->route('admin.products.index')
-            ->with('success', 'Product added successfully!');
+        return redirect()->route('admin.brands.index')
+            ->with('success', 'Brand added successfully!');
     }
 
-    public function edit(Product $product) {
-        $brands = Brand::all();
-        return view('admin.products.edit', compact('product', 'brands'));
+    public function edit(Brand $brand) {
+        return view('admin.brands.edit', compact('brand'));
     }
 
-    public function update(Request $request, Product $product) {
+    public function update(Request $request, Brand $brand) {
         $validated = $request->validate([
-            'brand_id'    => 'required|exists:brands,id',
-            'name'        => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'price'       => 'required|numeric|min:0',
-            'stock'       => 'required|integer|min:0',
-            'category'    => 'required|in:footwear,apparel,accessories',
-            'image'       => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
-            'is_featured' => 'boolean',
+            'name'         => 'required|string|max:255|unique:brands,name,' . $brand->id,
+            'accent_color' => 'required|string|max:7',
+            'logo'         => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
         ]);
 
-        if ($request->hasFile('image')) {
-            if ($product->image) Storage::disk('public')->delete($product->image);
-            $validated['image'] = $request->file('image')->store('products', 'public');
+        if ($request->hasFile('logo')) {
+            if ($brand->logo) Storage::disk('public')->delete($brand->logo);
+            $validated['logo'] = $request->file('logo')->store('brands', 'public');
         }
 
-        $validated['is_featured'] = $request->has('is_featured');
-        $product->update($validated);
+        $brand->update($validated);
 
-        return redirect()->route('admin.products.index')
-            ->with('success', 'Product updated successfully!');
+        return redirect()->route('admin.brands.index')
+            ->with('success', 'Brand updated successfully!');
     }
 
-    public function destroy(Product $product) {
-        if ($product->image) Storage::disk('public')->delete($product->image);
-        $name = $product->name;
-        $product->delete();
-        return redirect()->route('admin.products.index')
+    public function destroy(Brand $brand) {
+        if ($brand->logo) Storage::disk('public')->delete($brand->logo);
+        $name = $brand->name;
+        $brand->delete();
+        return redirect()->route('admin.brands.index')
             ->with('success', '"' . $name . '" deleted successfully!');
-    }
-
-    public function show(Product $product) {
-        return redirect()->route('admin.products.index');
     }
 }

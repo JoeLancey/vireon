@@ -54,6 +54,14 @@
                     <label for="image">Product Image</label>
                     <input type="file" id="image" name="image" accept="image/*">
                 </div>
+
+                {{-- Additional Images (INSIDE the form) --}}
+                <div style="grid-column:1/-1;">
+                    <label>Additional Images (up to 4)</label>
+                    <input type="file" name="additional_images[]" multiple accept="image/*" style="padding:0.6rem;cursor:pointer;">
+                    <p style="color:var(--muted);font-size:0.75rem;margin-top:0.3rem;">You can select up to 4 images</p>
+                </div>
+
                 <div style="grid-column:1/-1;display:flex;align-items:center;gap:0.75rem;padding:0.75rem;background:#1A1A1A;border:1px solid var(--border);border-radius:6px;">
                     <input type="checkbox" id="is_featured" name="is_featured" value="1" {{ old('is_featured') ? 'checked' : '' }} style="width:auto;padding:0;accent-color:var(--accent);">
                     <label for="is_featured" style="margin:0;color:#fff;cursor:pointer;">Mark as Featured Product</label>
