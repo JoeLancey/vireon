@@ -7,7 +7,7 @@
     <h1 class="font-display" style="font-size:2.5rem;color:#fff;margin:0.5rem 0 1.5rem;">ADD BRAND</h1>
 
     <div class="card" style="padding:2rem;">
-        <form method="POST" action="{{ route('admin.brands.store') }}">
+        <form method="POST" action="{{ route('admin.brands.store') }}" enctype="multipart/form-data">
             @csrf
             @if($errors->any())
             <div class="alert-error" style="margin-bottom:1.5rem;">
@@ -30,6 +30,11 @@
                         <input type="color" id="accent_color" name="accent_color" value="{{ old('accent_color', '#FFFFFF') }}" style="width:60px;height:42px;padding:2px;cursor:pointer;">
                         <input type="text" id="accent_color_text" value="{{ old('accent_color', '#FFFFFF') }}" placeholder="#FFFFFF" style="max-width:120px;" oninput="document.getElementById('accent_color').value=this.value">
                     </div>
+                </div>
+                <div>
+                    <label for="logo">Brand Logo</label>
+                    <input type="file" id="logo" name="logo" accept="image/png,image/jpeg,image/webp">
+                    <p style="color:#777;font-size:0.85rem;margin:0.5rem 0 0;">Upload a square or round logo for the brand card.</p>
                 </div>
             </div>
 

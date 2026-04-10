@@ -24,8 +24,12 @@
                 <tr style="border-bottom:1px solid var(--border);" onmouseover="this.style.background='#1A1A1A'" onmouseout="this.style.background='transparent'">
                     <td style="padding:1rem;">
                         <div style="display:flex;align-items:center;gap:0.75rem;">
-                            <div style="width:36px;height:36px;border-radius:50%;background:{{ $brand->accent_color }}22;border:2px solid {{ $brand->accent_color }};display:flex;align-items:center;justify-content:center;">
-                                <span class="font-display" style="color:{{ $brand->accent_color }};font-size:0.8rem;">{{ substr($brand->name,0,2) }}</span>
+                            <div style="width:36px;height:36px;border-radius:50%;background:{{ $brand->accent_color }}22;border:2px solid {{ $brand->accent_color }};display:flex;align-items:center;justify-content:center;overflow:hidden;">
+                                @if($brand->logo)
+                                    <img src="{{ Storage::url($brand->logo) }}" alt="{{ $brand->name }} logo" style="width:100%;height:100%;object-fit:contain;">
+                                @else
+                                    <span class="font-display" style="color:{{ $brand->accent_color }};font-size:0.8rem;">{{ substr($brand->name,0,2) }}</span>
+                                @endif
                             </div>
                             <span style="color:#fff;font-weight:600;">{{ $brand->name }}</span>
                         </div>

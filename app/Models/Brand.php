@@ -8,7 +8,7 @@ use Illuminate\Support\Str;
 class Brand extends Model {
     use HasFactory;
 
-    protected $fillable = ['name', 'slug', 'description', 'accent_color'];
+    protected $fillable = ['name', 'slug', 'description', 'accent_color', 'logo'];
 
     public function products() {
         return $this->hasMany(Product::class);
