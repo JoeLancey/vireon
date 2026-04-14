@@ -39,7 +39,6 @@
             <a href="{{ route('home') }}" class="nav-link {{ request()->routeIs('home') ? 'active' : '' }}">Home</a>
             <a href="{{ route('products.index') }}" class="nav-link {{ request()->routeIs('products.*') ? 'active' : '' }}">Products</a>
             @auth
-                <a href="{{ route('dashboard') }}" class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}">Dashboard</a>
                 @if(auth()->user()->isAdmin())
                     <a href="{{ route('admin.products.index') }}" class="nav-link {{ request()->routeIs('admin.*') ? 'active' : '' }}" style="color:var(--accent);">⚡ Admin</a>
                 @endif

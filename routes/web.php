@@ -2,9 +2,10 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProductController;
-use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Admin\ProductController as AdminProductController;
 use App\Http\Controllers\Admin\BrandController as AdminBrandController;
+use App\Http\Controllers\Admin\AdminController;
 
 // Public Routes
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -16,11 +17,17 @@ require __DIR__.'/auth.php';
 
 // Authenticated Routes
 Route::middleware('auth')->group(function () {
-    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    // Profile Routes
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
 // Admin Only Routes
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
+    Route::post('/seed-brands', [AdminController::class, 'seedBrands'])->name('seed.brands');
+    Route::post('/seed-products', [AdminController::class, 'seedProducts'])->name('seed.products');
     Route::resource('products', AdminProductController::class);
     Route::resource('brands', AdminBrandController::class);
 });

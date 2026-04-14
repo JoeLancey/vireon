@@ -37,10 +37,37 @@
 
     {{-- Quick Actions --}}
     <div style="display:flex;gap:1rem;margin-bottom:2.5rem;flex-wrap:wrap;">
-        <a href="{{ route('admin.products.create') }}" class="btn-accent">+ Add Product</a>
+        <a href="{{ route('admin.products.index') }}" class="btn-accent">📦 Manage Products & Brands</a>
+        <a href="{{ route('admin.products.create') }}" class="btn-outline">+ Add Product</a>
         <a href="{{ route('admin.brands.create') }}" class="btn-outline">+ Add Brand</a>
-        <a href="{{ route('admin.products.index') }}" class="btn-outline">Manage Products</a>
-        <a href="{{ route('admin.brands.index') }}" class="btn-outline">Manage Brands</a>
+    </div>
+
+    {{-- Database Seeding --}}
+    <div style="margin-bottom:2.5rem;">
+        <h2 class="font-display" style="font-size:1.5rem;color:#fff;margin-bottom:1rem;">DATABASE SEEDING</h2>
+        <div class="card" style="padding:1.5rem;">
+            <p style="color:var(--muted);margin-bottom:1rem;">Quickly populate your database with sample data for testing and development.</p>
+            <div style="display:flex;gap:1rem;flex-wrap:wrap;">
+                <form method="POST" action="{{ route('admin.seed.brands') }}" style="display:inline;">
+                    @csrf
+                    <button type="submit" class="btn-accent" onclick="return confirm('Seed sample brands?')">🌱 Seed Brands</button>
+                </form>
+                <form method="POST" action="{{ route('admin.seed.products') }}" style="display:inline;">
+                    @csrf
+                    <button type="submit" class="btn-outline" onclick="return confirm('Seed sample products?')">📦 Seed Products</button>
+                </form>
+            </div>
+            @if(session('success'))
+                <div style="margin-top:1rem;padding:0.75rem;border-radius:0.375rem;background:#10B981;color:#fff;">
+                    {{ session('success') }}
+                </div>
+            @endif
+            @if(session('error'))
+                <div style="margin-top:1rem;padding:0.75rem;border-radius:0.375rem;background:#EF4444;color:#fff;">
+                    {{ session('error') }}
+                </div>
+            @endif
+        </div>
     </div>
 
     {{-- Recent Products --}}

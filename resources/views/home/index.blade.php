@@ -61,119 +61,273 @@
 @endif
 @endauth
 
-{{-- HERO BANNER --}}
-<section style="position:relative;width:100%;height:92vh;min-height:600px;overflow:hidden;display:flex;align-items:flex-end;">
-
-    {{-- Slideshow Background --}}
-    <div id="heroSlider" style="position:absolute;inset:0;">
+{{-- MAIN HERO SECTION --}}
+<section style="position:relative;width:100%;min-height:85vh;background:var(--dark);overflow:hidden;display:flex;align-items:flex-end;">
+    <!-- Hero Background Slider -->
+    <div id="heroSlider" style="position:absolute;inset:0;width:100%;height:100%;">
         @php $heroImages = $featured->take(4); @endphp
         @foreach($heroImages as $i => $product)
-        <div class="hero-slide" style="position:absolute;inset:0;opacity:{{ $i === 0 ? '1' : '0' }};transition:opacity 1s ease;">
+        <div class="hero-slide" style="position:absolute;inset:0;opacity:{{ $i === 0 ? '1' : '0' }};transition:opacity 1s ease-in-out;">
             @if($product->image)
                 <img src="{{ Storage::url($product->image) }}" alt="{{ $product->name }}" loading="lazy" style="width:100%;height:100%;object-fit:cover;object-position:center;">
             @else
-                <div style="width:100%;height:100%;background:linear-gradient(135deg,#111,#1a1a1a);display:flex;align-items:center;justify-content:center;">
-                    <span class="font-display" style="font-size:20rem;color:#ffffff05;">{{ substr($product->name,0,1) }}</span>
+                <div style="width:100%;height:100%;background:linear-gradient(135deg,#1a1a1a,#0D0D0D);display:flex;align-items:center;justify-content:center;">
+                    <span class="font-display" style="font-size:30rem;color:#ffffff05;opacity:0.3;">{{ substr($product->name,0,1) }}</span>
                 </div>
             @endif
-            <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,0.95) 0%,rgba(0,0,0,0.4) 50%,rgba(0,0,0,0.1) 100%);"></div>
+            <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,0.98) 0%,rgba(0,0,0,0.5) 40%,rgba(0,0,0,0.08) 100%);"></div>
         </div>
         @endforeach
     </div>
 
-    {{-- Slide Dots --}}
-    <div style="position:absolute;top:2rem;right:2rem;display:flex;flex-direction:column;gap:0.5rem;z-index:10;">
+    <!-- Navigation Dots -->
+    <div style="position:absolute;top:50%;right:2rem;transform:translateY(-50%);display:flex;flex-direction:column;gap:0.8rem;z-index:10;">
         @foreach($heroImages as $i => $product)
-        <div class="hero-dot" role="button" tabindex="0" title="Show slide {{ $i + 1 }}" aria-label="Show slide {{ $i + 1 }}" onclick="goToSlide({{ $i }})" onkeydown="if(event.key==='Enter' || event.key===' ') goToSlide({{ $i }});" style="width:3px;height:{{ $i === 0 ? '30px' : '12px' }};background:{{ $i === 0 ? 'var(--accent)' : '#ffffff40' }};border-radius:999px;cursor:pointer;transition:all 0.3s;"></div>
+        <button class="hero-dot" onclick="goToSlide({{ $i }})" style="width:3px;height:{{ $i === 0 ? '40px' : '12px' }};background:{{ $i === 0 ? 'var(--accent)' : '#ffffff33' }};border:none;border-radius:999px;cursor:pointer;transition:all 0.3s ease;padding:0;" title="Slide {{ $i + 1 }}" aria-label="Slide {{ $i + 1 }}"></button>
         @endforeach
     </div>
 
-    {{-- Hero Content --}}
-    <div style="position:relative;z-index:2;width:100%;max-width:1200px;margin:0 auto;padding:0 1.5rem 4rem;">
-        <div id="heroLabel" style="display:inline-flex;align-items:center;gap:0.5rem;background:#C8FF0015;border:1px solid #C8FF0035;border-radius:999px;padding:0.35rem 1rem;margin-bottom:1.25rem;">
-            <span style="width:5px;height:5px;background:var(--accent);border-radius:50%;display:inline-block;"></span>
-            <span style="color:var(--accent);font-size:0.72rem;letter-spacing:0.2em;font-weight:600;">
-                {{ $featured->first()?->brand->name ?? 'VIREON' }} — NEW DROP
+    <!-- Hero Content -->
+    <div style="position:relative;z-index:5;width:100%;max-width:1200px;margin:0 auto;padding:0 1.5rem 5rem;">
+        <div id="heroLabel" style="display:inline-flex;align-items:center;gap:0.5rem;background:#C8FF0015;border:1px solid #C8FF0035;border-radius:999px;padding:0.4rem 1.2rem;margin-bottom:1.5rem;animation:fadeIn 0.6s ease;">
+            <span style="width:6px;height:6px;background:var(--accent);border-radius:50%;display:inline-block;"></span>
+            <span style="color:var(--accent);font-size:0.75rem;letter-spacing:0.2em;font-weight:700;text-transform:uppercase;">
+                NEW COLLECTION
             </span>
         </div>
-        <h1 id="heroTitle" class="font-display" style="font-size:clamp(3.5rem,8vw,7rem);line-height:0.92;color:#fff;margin-bottom:1.25rem;max-width:700px;">
-            {{ strtoupper($featured->first()?->name ?? 'GEAR UP. STAND OUT.') }}
+        <h1 id="heroTitle" class="font-display" style="font-size:clamp(2.5rem,9vw,7rem);line-height:0.9;color:#fff;margin:0 0 1.5rem;max-width:900px;animation:slideUp 0.8s ease;">
+            {{ strtoupper($featured->first()?->name ?? 'SHOWCASE YOUR STYLE') }}
         </h1>
-        <p id="heroPrice" style="color:var(--accent);font-size:1.5rem;font-weight:700;margin-bottom:2rem;" class="font-display">
+        <div style="display:flex;align-items:center;gap:2rem;margin-bottom:2.5rem;flex-wrap:wrap;">
+            <div>
+                <p style="color:#aaa;font-size:0.9rem;margin:0 0 0.5rem;text-transform:uppercase;font-weight:600;letter-spacing:0.1em;">From</p>
+                <p id="heroPrice" class="font-display" style="color:var(--accent);font-size:2.5rem;font-weight:700;margin:0;">
+                    @if($featured->first())
+                        ₱{{ number_format($featured->first()->price, 0) }}
+                    @else
+                        SHOP NOW
+                    @endif
+                </p>
+            </div>
             @if($featured->first())
-                ₱{{ number_format($featured->first()->price, 2) }}
+            <div>
+                <p style="color:#aaa;font-size:0.9rem;margin:0 0 0.5rem;text-transform:uppercase;font-weight:600;letter-spacing:0.1em;">By</p>
+                <p class="font-display" style="color:#fff;font-size:1.8rem;margin:0;">{{ strtoupper($featured->first()->brand->name ?? 'VIREON') }}</p>
+            </div>
             @endif
-        </p>
-        <div style="display:flex;gap:1rem;flex-wrap:wrap;">
-            <a id="heroBtn" href="{{ $featured->first() ? route('products.show', $featured->first()) : route('products.index') }}" class="btn-accent" style="font-size:1rem;padding:0.875rem 2.5rem;border-radius:6px;">
-                Shop Now
+        </div>
+        <div style="display:flex;gap:1.2rem;flex-wrap:wrap;">
+            <a id="heroBtn" href="{{ $featured->first() ? route('products.show', $featured->first()) : route('products.index') }}" class="btn-accent" style="font-size:1rem;padding:1rem 3rem;border-radius:6px;text-transform:uppercase;font-weight:700;letter-spacing:0.1em;">
+                Shop This
             </a>
-            <a href="{{ route('products.index') }}" class="btn-outline" style="font-size:1rem;padding:0.875rem 2.5rem;">
-                View All
+            <a href="{{ route('products.index') }}" class="btn-outline" style="font-size:1rem;padding:1rem 3rem;border-radius:6px;text-transform:uppercase;font-weight:700;letter-spacing:0.1em;">
+                Explore All
             </a>
         </div>
     </div>
 </section>
 
-{{-- BRANDS --}}
-<section style="max-width:1200px;margin:4rem auto;padding:0 1.5rem;">
-    <div style="margin-bottom:3rem;">
-        <p style="color:var(--accent);font-size:0.75rem;letter-spacing:0.2em;font-weight:700;margin:0 0 0.75rem;text-transform:uppercase;">Official Partners</p>
-        <h2 class="font-display" style="font-size:3rem;color:#fff;margin:0;">SHOP BY BRAND</h2>
-    </div>
-    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:1.5rem;">
-        @forelse($brands as $brand)
-        <a href="{{ route('products.index', ['brand_id' => $brand->id]) }}" style="text-decoration:none;">
-            <div style="background:#111;border:1px solid var(--border);border-radius:14px;padding:2rem 1.5rem;text-align:center;transition:all 0.3s;cursor:pointer;"
-                 onmouseover="this.style.borderColor='{{ $brand->accent_color }}';this.style.transform='translateY(-3px)'"
-                 onmouseout="this.style.borderColor='var(--border)';this.style.transform='translateY(0)'">
-                <div style="width:70px;height:70px;border-radius:50%;background:{{ $brand->accent_color }}15;border:1.5px solid {{ $brand->accent_color }}35;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;overflow:hidden;">
-                    @if($brand->logo)
-                        <img src="{{ Storage::url($brand->logo) }}" alt="{{ $brand->name }}" style="width:90%;height:90%;object-fit:contain;">
+{{-- FEATURED PRODUCTS GRID (IMAGE SHOWCASE) --}}
+<section style="background:var(--dark);padding:5rem 1.5rem;border-top:1px solid var(--border);">
+    <div style="max-width:1200px;margin:0 auto;">
+        <div style="margin-bottom:4rem;text-align:center;">
+            <p style="color:var(--accent);font-size:0.75rem;letter-spacing:0.2em;font-weight:700;margin:0 0 1rem;text-transform:uppercase;">Featured Selection</p>
+            <h2 class="font-display" style="font-size:clamp(2rem,5vw,3.5rem);color:#fff;margin:0;line-height:1;">LATEST DROPS</h2>
+        </div>
+
+        {{-- Featured Products Grid --}}
+        <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(340px, 1fr));gap:1.5rem;margin-bottom:4rem;">
+            @forelse($featured as $product)
+            <a href="{{ route('products.show', $product) }}" style="text-decoration:none;display:block;position:relative;group;">
+                <div style="position:relative;overflow:hidden;border-radius:12px;aspect-ratio:1;background:linear-gradient(135deg,#111,#1a1a1a);border:1px solid var(--border);transition:all 0.4s ease;cursor:pointer;" class="product-card" onmouseover="this.style.transform='scale(1.02)';this.style.borderColor='var(--accent)'" onmouseout="this.style.transform='scale(1)';this.style.borderColor='var(--border)'">
+                    {{-- Product Image --}}
+                    @if($product->image)
+                        <img src="{{ Storage::url($product->image) }}" alt="{{ $product->name }}" loading="lazy" style="width:100%;height:100%;object-fit:cover;object-position:center;transition:transform 0.4s ease;" class="product-img" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
                     @else
-                        <span class="font-display" style="color:{{ $brand->accent_color }};font-size:1.5rem;font-weight:700;">{{ substr($brand->name,0,2) }}</span>
+                        <div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#1a1a1a,#111);">
+                            <span class="font-display" style="font-size:6rem;color:#ffffff08;">{{ substr($product->name,0,1) }}</span>
+                        </div>
+                    @endif
+                    
+                    {{-- Badge --}}
+                    <div style="position:absolute;top:1rem;right:1rem;background:var(--accent);color:#0D0D0D;padding:0.5rem 1rem;border-radius:999px;font-size:0.75rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;z-index:2;">New</div>
+
+                    {{-- Product Info Overlay --}}
+                    <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,0.9) 0%,rgba(0,0,0,0.4) 50%,rgba(0,0,0,0.08) 100%);display:flex;flex-direction:column;justify-content:flex-end;padding:2rem;opacity:0;transition:opacity 0.3s ease;" class="product-overlay" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0'">
+                        <p style="color:var(--accent);font-size:0.85rem;margin:0 0 0.5rem;font-weight:600;text-transform:uppercase;letter-spacing:0.1em;">{{ strtoupper($product->brand->name) }}</p>
+                        <h3 class="font-display" style="color:#fff;font-size:1.8rem;margin:0 0 1rem;line-height:1;">{{ strtoupper($product->name) }}</h3>
+                        <div style="display:flex;justify-content:space-between;align-items:flex-end;">
+                            <p class="font-display" style="color:var(--accent);font-size:1.5rem;margin:0;font-weight:700;">₱{{ number_format($product->price, 0) }}</p>
+                            <p style="color:#aaa;font-size:0.9rem;margin:0;">{{ $product->stock > 0 ? 'In Stock' : 'Out of Stock' }}</p>
+                        </div>
+                    </div>
+                </div>
+            </a>
+            @empty
+            <div style="grid-column:1/-1;padding:3rem;border:1px solid var(--border);border-radius:12px;text-align:center;color:#666;background:linear-gradient(135deg,#111,#1a1a1a);">
+                <p style="font-size:1.1rem;margin:0;">No featured products available yet.</p>
+            </div>
+            @endforelse
+        </div>
+
+        {{-- View All Featured --}}
+        <div style="text-align:center;">
+            <a href="{{ route('products.index') }}" class="btn-accent" style="font-size:1rem;padding:1rem 3rem;text-transform:uppercase;font-weight:700;letter-spacing:0.1em;">View All Products</a>
+        </div>
+    </div>
+</section>
+
+{{-- BRANDS SHOWCASE SECTION --}}
+<section style="padding:5rem 1.5rem;background:linear-gradient(135deg,#0D0D0D,#111);border-top:1px solid var(--border);">
+    <div style="max-width:1200px;margin:0 auto;">
+        <div style="margin-bottom:4rem;">
+            <p style="color:var(--accent);font-size:0.75rem;letter-spacing:0.2em;font-weight:700;margin:0 0 1rem;text-transform:uppercase;">Official Partners</p>
+            <h2 class="font-display" style="font-size:clamp(2rem,5vw,3.5rem);color:#fff;margin:0;line-height:1;">SHOP BY BRAND</h2>
+        </div>
+        
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1.5rem;">
+            @forelse($brands as $brand)
+            <a href="{{ route('products.index', ['brand_id' => $brand->id]) }}" style="text-decoration:none;display:block;">
+                <div style="position:relative;aspect-ratio:1;border-radius:12px;overflow:hidden;border:1px solid var(--border);background:linear-gradient(135deg,#161616,#1a1a1a);transition:all 0.3s;cursor:pointer;group;" onmouseover="this.style.transform='translateY(-8px)';this.style.borderColor='var(--accent)'" onmouseout="this.style.transform='translateY(0)';this.style.borderColor='var(--border)'">
+                    {{-- Brand Background --}}
+                    <div style="position:absolute;inset:0;background:linear-gradient(135deg,{{ $brand->accent_color ?? 'var(--accent)' }}22,{{ $brand->accent_color ?? 'var(--accent)' }}08);filter:blur(20px);"></div>
+                    
+                    {{-- Brand Logo/Content --}}
+                    <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;z-index:2;">
+                        @if($brand->logo)
+                            <img src="{{ Storage::url($brand->logo) }}" alt="{{ $brand->name }}" style="width:120px;max-height:120px;height:auto;object-fit:contain;opacity:0.95;transition:transform 0.3s;" onmouseover="this.style.transform='scale(1.08)'" onmouseout="this.style.transform='scale(1)'">
+                        @else
+                            <div style="text-align:center;">
+                                <div class="font-display" style="color:{{ $brand->accent_color ?? 'var(--accent)' }};font-size:3rem;font-weight:700;line-height:1;margin-bottom:0.5rem;">{{ substr($brand->name,0,3) }}</div>
+                                <p class="font-display" style="color:#fff;font-size:0.9rem;margin:0;font-weight:600;letter-spacing:0.1em;">{{ $brand->name }}</p>
+                            </div>
+                        @endif
+                    </div>
+
+                    {{-- Hover Info --}}
+                    <div style="position:absolute;bottom:0;left:0;right:0;background:linear-gradient(to top,rgba(0,0,0,0.95),transparent);padding:1.5rem;transform:translateY(20px);opacity:0;transition:all 0.3s;z-index:3;" class="brand-hover" onmouseover="this.style.transform='translateY(0)';this.style.opacity='1'" onmouseout="this.style.transform='translateY(20px)';this.style.opacity='0'">
+                        <p class="font-display" style="color:#fff;font-size:1.3rem;margin:0 0 0.5rem;font-weight:700;">{{ strtoupper($brand->name) }}</p>
+                        <p style="color:var(--accent);font-size:0.9rem;margin:0;font-weight:600;">{{ $brand->products_count }} {{ $brand->products_count === 1 ? 'Product' : 'Products' }}</p>
+                    </div>
+                </div>
+            </a>
+            @empty
+            <div style="grid-column:1/-1;padding:3rem;border:1px solid var(--border);border-radius:12px;text-align:center;color:#666;">
+                <p style="font-size:1.1rem;margin:0;">No brands available yet.</p>
+            </div>
+            @endforelse
+        </div>
+    </div>
+</section>
+
+{{-- ALL PRODUCTS SHOWCASE --}}
+<section style="padding:5rem 1.5rem;background:var(--dark);border-top:1px solid var(--border);">
+    <div style="max-width:1200px;margin:0 auto;">
+        <div style="margin-bottom:4rem;">
+            <p style="color:var(--accent);font-size:0.75rem;letter-spacing:0.2em;font-weight:700;margin:0 0 1rem;text-transform:uppercase;">Complete Collection</p>
+            <h2 class="font-display" style="font-size:clamp(2rem,5vw,3.5rem);color:#fff;margin:0;line-height:1;">EXPLORE OUR CATALOG</h2>
+        </div>
+
+        {{-- Products Grid (4 columns on desktop, responsive) --}}
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1.2rem;">
+            @forelse($allProducts as $product)
+            <a href="{{ route('products.show', $product) }}" style="text-decoration:none;display:block;">
+                <div style="position:relative;overflow:hidden;border-radius:12px;aspect-ratio:1;background:linear-gradient(135deg,#111,#1a1a1a);border:1px solid var(--border);transition:all 0.3s ease;cursor:pointer;" onmouseover="this.style.transform='scale(1.02)';this.style.borderColor='var(--accent)'" onmouseout="this.style.transform='scale(1)';this.style.borderColor='var(--border)'">
+                    {{-- Product Image --}}
+                    @if($product->image)
+                        <img src="{{ Storage::url($product->image) }}" alt="{{ $product->name }}" loading="lazy" style="width:100%;height:100%;object-fit:cover;object-position:center;transition:transform 0.4s ease;" onmouseover="this.style.transform='scale(1.08)'" onmouseout="this.style.transform='scale(1)'">
+                    @else
+                        <div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#1a1a1a,#111);">
+                            <span class="font-display" style="font-size:5rem;color:#ffffff08;">{{ substr($product->name,0,1) }}</span>
+                        </div>
+                    @endif
+                    
+                    {{-- Info Overlay --}}
+                    <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,0.9) 0%,transparent);padding:1.5rem;display:flex;flex-direction:column;justify-content:flex-end;opacity:0;transition:opacity 0.3s ease;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0'">
+                        <p style="color:var(--accent);font-size:0.75rem;margin:0 0 0.3rem;font-weight:600;text-transform:uppercase;letter-spacing:0.1em;">{{ strtoupper($product->brand->name) }}</p>
+                        <p class="font-display" style="color:#fff;font-size:1.3rem;margin:0 0 0.5rem;line-height:1;max-height:2.6rem;overflow:hidden;">{{ strtoupper($product->name) }}</p>
+                        <p class="font-display" style="color:var(--accent);font-size:1.2rem;margin:0;font-weight:700;">₱{{ number_format($product->price, 0) }}</p>
+                    </div>
+
+                    {{-- Stock Badge --}}
+                    @if($product->stock === 0)
+                    <div style="position:absolute;top:1rem;left:1rem;background:#FF6B6B;color:#fff;padding:0.4rem 0.8rem;border-radius:4px;font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;z-index:2;">Out of Stock</div>
                     @endif
                 </div>
-                <h3 class="font-display" style="color:#fff;font-size:1.2rem;margin:0 0 0.4rem;font-weight:700;">{{ $brand->name }}</h3>
-                <p style="color:#777;font-size:0.9rem;margin:0;">{{ $brand->products_count }} items</p>
+            </a>
+            @empty
+            <div style="grid-column:1/-1;padding:3rem;border:1px solid var(--border);border-radius:12px;text-align:center;color:#666;background:linear-gradient(135deg,#111,#1a1a1a);">
+                <p style="font-size:1.1rem;margin:0;">No products available yet.</p>
             </div>
-        </a>
-        @empty
-        <div style="grid-column:1/-1;padding:2rem;border:1px solid var(--border);border-radius:14px;text-align:center;color:#888;">
-            No brands available.
+            @endforelse
         </div>
-        @endforelse
+
+        {{-- Browse All --}}
+        <div style="text-align:center;margin-top:3rem;">
+            <a href="{{ route('products.index') }}" class="btn-outline" style="font-size:1rem;padding:1rem 3rem;text-transform:uppercase;font-weight:700;letter-spacing:0.1em;">Browse All Products</a>
+        </div>
     </div>
 </section>
 
-{{-- CTA BANNER --}}
+{{-- CTA BANNER WITH IMAGE --}}
 @guest
-<section style="max-width:1200px;margin:0 auto 5rem;padding:0 1.5rem;">
-    <div style="position:relative;border-radius:16px;overflow:hidden;min-height:300px;display:flex;align-items:center;justify-content:center;text-align:center;">
+<section style="position:relative;width:100%;height:60vh;min-height:500px;overflow:hidden;background:var(--dark);border-top:1px solid var(--border);display:flex;align-items:center;justify-content:center;">
+    <!-- Background with gradient -->
+    <div style="position:absolute;inset:0;">
         <div style="position:absolute;inset:0;background:linear-gradient(135deg,#0D0D0D,#1a1a1a);"></div>
-        <div style="position:absolute;inset:0;background:radial-gradient(ellipse at 50% 50%,#C8FF0018,transparent 70%);"></div>
-        <div style="position:absolute;top:-50px;left:-50px;width:300px;height:300px;background:var(--accent);opacity:0.04;border-radius:50%;filter:blur(60px);"></div>
-        <div style="position:absolute;bottom:-50px;right:-50px;width:300px;height:300px;background:var(--accent);opacity:0.04;border-radius:50%;filter:blur(60px);"></div>
-        <div style="position:relative;z-index:1;padding:3rem 2rem;">
-            <p style="color:var(--accent);font-size:0.72rem;letter-spacing:0.25em;font-weight:600;margin:0 0 1rem;">EXCLUSIVE ACCESS</p>
-            <h2 class="font-display" style="font-size:clamp(2.5rem,5vw,4.5rem);color:#fff;margin:0 0 1rem;line-height:0.95;">JOIN VIREON.<br>SHOP BETTER.</h2>
-            <p style="color:#555;max-width:420px;margin:0 auto 2rem;line-height:1.7;">Create a free account and unlock access to exclusive drops, deals, and the latest from your favorite brands.</p>
-            <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;">
-                <a href="{{ route('register') }}" class="btn-accent" style="font-size:1rem;padding:0.875rem 2.5rem;">Create Account</a>
-                <a href="{{ route('login') }}" class="btn-outline" style="font-size:1rem;padding:0.875rem 2.5rem;">Sign In</a>
-            </div>
+        <div style="position:absolute;inset:0;background:radial-gradient(circle at 50% 50%,rgba(200, 255, 0, 0.1) 0%,transparent 70%);"></div>
+        <div style="position:absolute;top:10%;left:5%;width:400px;height:400px;background:var(--accent);opacity:0.04;border-radius:50%;filter:blur(80px);animation:float 6s ease-in-out infinite;"></div>
+        <div style="position:absolute;bottom:10%;right:5%;width:350px;height:350px;background:var(--accent);opacity:0.03;border-radius:50%;filter:blur(80px);animation:float 8s ease-in-out infinite reverse;"></div>
+    </div>
+
+    <!-- Content -->
+    <div style="position:relative;z-index:2;padding:3rem;text-align:center;max-width:700px;">
+        <p style="color:var(--accent);font-size:0.8rem;letter-spacing:0.2em;font-weight:700;margin:0 0 1rem;text-transform:uppercase;animation:slideUp 0.6s ease;">Ready to Stand Out?</p>
+        <h2 class="font-display" style="font-size:clamp(2.5rem,6vw,4.5rem);color:#fff;margin:0 0 1.5rem;line-height:0.95;animation:slideUp 0.8s ease 0.1s backwards;">JOIN THE VIREON COMMUNITY</h2>
+        <p style="color:#aaa;font-size:1.05rem;margin:0 0 2.5rem;line-height:1.7;animation:slideUp 1s ease 0.2s backwards;">Create an account to access exclusive drops, member-only deals, and the latest from your favorite brands.</p>
+        <div style="display:flex;gap:1.2rem;justify-content:center;flex-wrap:wrap;animation:slideUp 1.2s ease 0.3s backwards;">
+            <a href="{{ route('register') }}" class="btn-accent" style="font-size:1rem;padding:1rem 2.5rem;text-transform:uppercase;font-weight:700;letter-spacing:0.1em;">Create Account</a>
+            <a href="{{ route('login') }}" class="btn-outline" style="font-size:1rem;padding:1rem 2.5rem;text-transform:uppercase;font-weight:700;letter-spacing:0.1em;">Sign In</a>
         </div>
     </div>
 </section>
 @endguest
 
+{{-- FOOTER CTA --}}
+<section style="padding:4rem 1.5rem;background:linear-gradient(135deg,#0D0D0D,#111);border-top:1px solid var(--border);text-align:center;">
+    <div style="max-width:1200px;margin:0 auto;">
+        <div class="font-display" style="font-size:2.5rem;color:#fff;margin:0 0 1rem;line-height:1;">THOUSANDS OF STYLES. ONE DESTINATION.</div>
+        <p style="color:#aaa;font-size:1.1rem;max-width:600px;margin:0 auto;line-height:1.7;">Discover premium wearable brands and exclusive collections. Your style, amplified.</p>
+    </div>
+</section>
+
 <style>
-.hero-dot {
-    cursor: pointer;
-}
-.hero-dot:hover {
-    opacity: 0.9;
-}
+    @keyframes slideUp {
+        from { opacity: 0; transform: translateY(30px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+
+    @keyframes float {
+        0%, 100% { transform: translateY(0px); }
+        50% { transform: translateY(30px); }
+    }
+
+    .hero-slide { animation: fadeIn 0.8s ease; }
+    .hero-dot { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+    .hero-dot:hover { background: var(--accent) !important; height: 30px !important; }
+    
+    .product-card { transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+    .product-overlay { transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+    
+    @media (max-width: 768px) {
+        .hero-dot { display: none; }
+        .product-overlay { opacity: 1; }
+    }
 </style>
 
 <script>
@@ -181,15 +335,23 @@
     const slides = document.querySelectorAll('.hero-slide');
     const dots = document.querySelectorAll('.hero-dot');
     const heroData = @json($heroData);
+    const autoSlideInterval = 5000;
+    let slideTimer;
 
-    function goToSlide(index) {
-        slides[currentSlide].style.opacity = '0';
-        dots[currentSlide].style.height = '12px';
-        dots[currentSlide].style.background = '#ffffff40';
-        currentSlide = index;
-        slides[currentSlide].style.opacity = '1';
-        dots[currentSlide].style.height = '30px';
-        dots[currentSlide].style.background = 'var(--accent)';
+    function updateSlide() {
+        slides.forEach((slide, i) => {
+            slide.style.opacity = i === currentSlide ? '1' : '0';
+        });
+        
+        dots.forEach((dot, i) => {
+            if (i === currentSlide) {
+                dot.style.height = '40px';
+                dot.style.background = 'var(--accent)';
+            } else {
+                dot.style.height = '12px';
+                dot.style.background = '#ffffff33';
+            }
+        });
 
         if (heroData[currentSlide]) {
             document.getElementById('heroTitle').textContent = heroData[currentSlide].name;
@@ -199,9 +361,33 @@
         }
     }
 
-    setInterval(() => {
-        goToSlide((currentSlide + 1) % slides.length);
-    }, 4000);
+    function goToSlide(index) {
+        currentSlide = index;
+        updateSlide();
+        clearTimeout(slideTimer);
+        startAutoSlide();
+    }
+
+    function nextSlide() {
+        currentSlide = (currentSlide + 1) % slides.length;
+        updateSlide();
+    }
+
+    function startAutoSlide() {
+        slideTimer = setInterval(() => {
+            nextSlide();
+        }, autoSlideInterval);
+    }
+
+    // Initialize
+    if (slides.length > 0) {
+        updateSlide();
+        startAutoSlide();
+    }
+
+    // Pause on hover
+    document.getElementById('heroSlider')?.addEventListener('mouseenter', () => clearTimeout(slideTimer));
+    document.getElementById('heroSlider')?.addEventListener('mouseleave', () => startAutoSlide());
 </script>
 
 @endsection

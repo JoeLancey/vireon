@@ -7,9 +7,10 @@ use Illuminate\Support\Facades\Storage;
 
 class HomeController extends Controller {
     public function index() {
-        $brands   = Brand::withCount('products')->get();
-        $featured = Product::with('brand')->where('is_featured', true)->take(6)->get();
-        $stats    = [
+        $brands      = Brand::withCount('products')->get();
+        $featured    = Product::with('brand')->where('is_featured', true)->take(6)->get();
+        $allProducts = Product::with('brand')->latest()->limit(12)->get();
+        $stats       = [
             'total_products' => Product::count(),
             'in_stock'       => Product::where('stock', '>', 0)->count(),
             'out_of_stock'   => Product::where('stock', 0)->count(),
@@ -24,6 +25,6 @@ class HomeController extends Controller {
             'url'   => route('products.show', $p),
         ])->values();
 
-        return view('home.index', compact('brands', 'featured', 'stats', 'heroData'));
+        return view('home.index', compact('brands', 'featured', 'allProducts', 'stats', 'heroData'));
     }
 }

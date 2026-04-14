@@ -10,10 +10,30 @@ use Illuminate\Support\Facades\Storage;
 
 class ProductController extends Controller {
     public function index(Request $request) {
-        $brands   = Brand::all();
-        $query    = Product::with('brand');
-        if ($request->brand_id) $query->where('brand_id', $request->brand_id);
+        $brands = Brand::withCount('products')->get();
+
+        $query = Product::with('brand');
+
+        // Filter by brand
+        if ($request->brand) {
+            $brand = Brand::where('slug', $request->brand)->first();
+            if ($brand) {
+                $query->where('brand_id', $brand->id);
+            }
+        }
+
+        // Filter by category
+        if ($request->category) {
+            $query->where('category', $request->category);
+        }
+
+        // Search
+        if ($request->search) {
+            $query->where('name', 'like', '%' . $request->search . '%');
+        }
+
         $products = $query->latest()->paginate(15);
+
         return view('admin.products.index', compact('products', 'brands'));
     }
 
