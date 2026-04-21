@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 class ProductController extends Controller {
     public function index(Request $request) {
         $brands = Brand::all();
-        $query  = Product::with('brand');
+        $query  = Product::active()->with('brand');
 
         if ($request->brand) {
             $query->whereHas('brand', fn($q) => $q->where('slug', $request->brand));
@@ -27,10 +27,14 @@ class ProductController extends Controller {
     }
 
     public function show(Product $product) {
-        $related = Product::with('brand')
+        abort_if($product->is_archived, 404);
+
+        $related = Product::active()
+            ->with('brand')
             ->where('brand_id', $product->brand_id)
             ->where('id', '!=', $product->id)
             ->take(4)->get();
+
         return view('products.show', compact('product', 'related'));
     }
 }

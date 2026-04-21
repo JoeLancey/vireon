@@ -11,7 +11,7 @@
         <div style="padding:1.75rem 2rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;">
             <div style="display:flex;align-items:center;gap:1rem;">
                 <div style="width:40px;height:40px;background:var(--accent)15;border:1px solid var(--accent)40;border-radius:8px;display:flex;align-items:center;justify-content:center;">
-                    <span style="font-size:1.1rem;">⚡</span>
+                    <span style="color:var(--accent);font-size:1.1rem;line-height:1;">V</span>
                 </div>
                 <div>
                     <p style="color:var(--accent);font-size:0.72rem;letter-spacing:0.2em;font-weight:600;margin:0 0 0.15rem;">ADMINISTRATOR</p>
@@ -100,7 +100,7 @@
         </h1>
         <div style="display:flex;align-items:center;gap:2rem;margin-bottom:2.5rem;flex-wrap:wrap;">
             <div>
-                <p style="color:#aaa;font-size:0.9rem;margin:0 0 0.5rem;text-transform:uppercase;font-weight:600;letter-spacing:0.1em;">From</p>
+                <p style="color:#aaa;font-size:0.9rem;margin:0 0 0.5rem;text-transform:uppercase;font-weight:600;letter-spacing:0.1em;">FOR ONLY</p>
                 <p id="heroPrice" class="font-display" style="color:var(--accent);font-size:2.5rem;font-weight:700;margin:0;">
                     @if($featured->first())
                         ₱{{ number_format($featured->first()->price, 0) }}

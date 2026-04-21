@@ -3,24 +3,47 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Builder;
 
 class Product extends Model {
     use HasFactory;
 
     protected $fillable = [
         'brand_id', 'name', 'description', 'price',
-        'image', 'stock', 'category', 'is_featured'
+        'image', 'video', 'stock', 'category', 'is_featured', 'is_archived'
     ];
 
-    protected $casts = ['is_featured' => 'boolean'];
+    protected $casts = [
+        'is_featured' => 'boolean',
+        'is_archived' => 'boolean',
+    ];
+
+    public function scopeActive(Builder $query): Builder
+    {
+        return $query->where('is_archived', false);
+    }
+
+    public function scopeArchived(Builder $query): Builder
+    {
+        return $query->where('is_archived', true);
+    }
+
+    public function scopeAvailable(Builder $query): Builder
+    {
+        return $query->where('is_archived', false);
+    }
 
     public function brand() {
         return $this->belongsTo(Brand::class);
     }
 
-
     public function images()
     {
         return $this->hasMany(ProductImage::class);
+    }
+
+    public function orderItems()
+    {
+        return $this->hasMany(OrderItem::class);
     }
 }

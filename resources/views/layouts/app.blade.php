@@ -20,6 +20,20 @@
         .nav-link:hover { color: var(--accent); }
         .nav-link.active { color: var(--accent); border-bottom: 2px solid var(--accent); }
         input, select, textarea { background: #1A1A1A !important; border: 1px solid var(--border) !important; color: #F0F0F0 !important; border-radius: 6px; padding: 0.6rem 1rem; width: 100%; outline: none; box-sizing: border-box; }
+        input[type="checkbox"], input[type="radio"] {
+            width: 1rem;
+            height: 1rem;
+            padding: 0;
+            margin: 0;
+            border: none !important;
+            background: transparent !important;
+            appearance: auto;
+            -webkit-appearance: auto;
+            accent-color: var(--accent);
+            flex: 0 0 auto;
+        }
+        input[type="checkbox"] { border-radius: 4px; }
+        input[type="radio"] { border-radius: 999px; }
         input:focus, select:focus, textarea:focus { border-color: var(--accent) !important; }
         label { color: #aaa; font-size: 0.85rem; margin-bottom: 0.3rem; display: block; font-weight: 500; }
         .badge-admin { background: #C8FF0022; color: var(--accent); border: 1px solid var(--accent); padding: 0.2rem 0.6rem; border-radius: 999px; font-size: 0.75rem; }
@@ -30,6 +44,11 @@
     </style>
 </head>
 <body>
+@php
+    $cartCount = auth()->check() && ! auth()->user()->isAdmin()
+        ? (auth()->user()->cart?->totalItems() ?? 0)
+        : 0;
+@endphp
 <nav style="background:#0D0D0D;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100;">
     <div style="max-width:1200px;margin:0 auto;padding:0 1.5rem;display:flex;align-items:center;justify-content:space-between;height:64px;">
         <a href="{{ route('home') }}" style="text-decoration:none;">
@@ -39,8 +58,17 @@
             <a href="{{ route('home') }}" class="nav-link {{ request()->routeIs('home') ? 'active' : '' }}">Home</a>
             <a href="{{ route('products.index') }}" class="nav-link {{ request()->routeIs('products.*') ? 'active' : '' }}">Products</a>
             @auth
+                @if(! auth()->user()->isAdmin())
+                    <a href="{{ route('orders.index') }}" class="nav-link {{ request()->routeIs('orders.*') ? 'active' : '' }}">Orders</a>
+                    <a href="{{ route('cart.index') }}" class="nav-link {{ request()->routeIs('cart.*') ? 'active' : '' }}" style="display:inline-flex;align-items:center;gap:0.45rem;">
+                        <span>Cart</span>
+                        <span style="min-width:1.35rem;height:1.35rem;padding:0 0.35rem;border-radius:999px;background:{{ $cartCount > 0 ? 'var(--accent)' : '#222' }};color:{{ $cartCount > 0 ? '#0D0D0D' : '#aaa' }};display:inline-flex;align-items:center;justify-content:center;font-size:0.75rem;font-weight:700;">{{ $cartCount }}</span>
+                    </a>
+                @endif
+            @endauth
+            @auth
                 @if(auth()->user()->isAdmin())
-                    <a href="{{ route('admin.products.index') }}" class="nav-link {{ request()->routeIs('admin.*') ? 'active' : '' }}" style="color:var(--accent);">⚡ Admin</a>
+                    <a href="{{ route('admin.dashboard') }}" class="nav-link {{ request()->routeIs('admin.*') ? 'active' : '' }}" style="color:var(--accent);">Admin</a>
                 @endif
             @endauth
         </div>
@@ -65,10 +93,10 @@
 
 <div style="max-width:1200px;margin:0 auto;padding:0 1.5rem;">
     @if(session('success'))
-        <div class="alert-success" style="margin-top:1rem;">✓ {{ session('success') }}</div>
+        <div class="alert-success" style="margin-top:1rem;">{{ session('success') }}</div>
     @endif
     @if(session('error'))
-        <div class="alert-error" style="margin-top:1rem;">✗ {{ session('error') }}</div>
+        <div class="alert-error" style="margin-top:1rem;">{{ session('error') }}</div>
     @endif
 </div>
 

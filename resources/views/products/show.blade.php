@@ -37,6 +37,19 @@
 
         </div>
 
+        {{-- Product Video (if available) --}}
+        @if($product->video)
+        <div style="grid-column:1/-1;margin-top:2rem;">
+            <h2 style="color:#fff;font-size:1.25rem;margin-bottom:1rem;font-weight:600;">Product Video</h2>
+            <div style="background:#161616;border:1px solid var(--border);border-radius:12px;overflow:hidden;aspect-ratio:16/9;">
+                <video width="100%" height="100%" style="width:100%;height:100%;object-fit:cover;" controls>
+                    <source src="{{ Storage::url($product->video) }}" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+            </div>
+        </div>
+        @endif
+
         {{-- Details --}}
         <div>
             <div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:0.75rem;flex-wrap:wrap;">
@@ -61,9 +74,20 @@
 
             @auth
                 @if(!auth()->user()->isAdmin())
-                <button class="btn-accent" style="border:none;cursor:pointer;font-size:1rem;padding:0.875rem 2.5rem;width:100%;{{ $product->stock < 1 ? 'opacity:0.4;cursor:not-allowed;' : '' }}" {{ $product->stock < 1 ? 'disabled' : '' }}>
-                    Add to Cart
-                </button>
+                <form method="POST" action="{{ route('cart.store', $product) }}" style="display:grid;gap:0.85rem;">
+                    @csrf
+
+                    <div style="display:flex;gap:0.75rem;align-items:flex-end;flex-wrap:wrap;">
+                        <div style="flex:0 0 120px;">
+                            <label for="quantity" style="margin-bottom:0.45rem;color:var(--muted);font-size:0.8rem;">Quantity</label>
+                            <input id="quantity" type="number" name="quantity" min="1" max="{{ max($product->stock, 1) }}" value="1" {{ $product->stock < 1 ? 'disabled' : '' }}>
+                        </div>
+
+                        <button type="submit" class="btn-accent" style="border:none;cursor:pointer;font-size:1rem;padding:0.875rem 2.5rem;flex:1;{{ $product->stock < 1 ? 'opacity:0.4;cursor:not-allowed;' : '' }}" {{ $product->stock < 1 ? 'disabled' : '' }}>
+                            Add to Cart
+                        </button>
+                    </div>
+                </form>
                 @else
                 <a href="{{ route('admin.products.edit', $product) }}" class="btn-accent" style="display:block;text-align:center;padding:0.875rem;">Edit Product</a>
                 @endif

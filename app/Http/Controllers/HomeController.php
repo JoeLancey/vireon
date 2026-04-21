@@ -3,17 +3,16 @@ namespace App\Http\Controllers;
 
 use App\Models\Brand;
 use App\Models\Product;
-use Illuminate\Support\Facades\Storage;
 
 class HomeController extends Controller {
     public function index() {
-        $brands      = Brand::withCount('products')->get();
-        $featured    = Product::with('brand')->where('is_featured', true)->take(6)->get();
-        $allProducts = Product::with('brand')->latest()->limit(12)->get();
+        $brands      = Brand::withCount(['products' => fn ($query) => $query->available()])->get();
+        $featured    = Product::available()->with('brand')->where('is_featured', true)->take(6)->get();
+        $allProducts = Product::available()->with('brand')->latest()->limit(12)->get();
         $stats       = [
-            'total_products' => Product::count(),
-            'in_stock'       => Product::where('stock', '>', 0)->count(),
-            'out_of_stock'   => Product::where('stock', 0)->count(),
+            'total_products' => Product::available()->count(),
+            'in_stock'       => Product::available()->where('stock', '>', 0)->count(),
+            'out_of_stock'   => Product::available()->where('stock', 0)->count(),
             'total_brands'   => Brand::count(),
         ];
 

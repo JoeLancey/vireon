@@ -75,6 +75,21 @@
                     <p style="color:var(--muted);font-size:0.75rem;margin-top:0.3rem;">Uploading new images will replace the existing ones</p>
                 </div>
 
+                {{-- Product Video --}}
+                <div style="grid-column:1/-1;">
+                    @if($product->video)
+                    <div style="background:#1A1A1A;border:1px solid var(--border);border-radius:6px;padding:1rem;display:block;margin-bottom:0.75rem;">
+                        <video width="200" height="120" style="max-width:100%;object-fit:contain;border-radius:4px;" controls>
+                            <source src="{{ Storage::url($product->video) }}" type="video/mp4">
+                            Your browser does not support the video tag.
+                        </video>
+                    </div>
+                    @endif
+                    <label for="video">{{ $product->video ? 'Replace Video (MP4)' : 'Product Video (MP4)' }}</label>
+                    <input type="file" id="video" name="video" accept="video/mp4,video/*">
+                    <p style="color:var(--muted);font-size:0.75rem;margin-top:0.3rem;">Max file size: 100MB</p>
+                </div>
+
                 <div style="grid-column:1/-1;display:flex;align-items:center;gap:0.75rem;padding:0.75rem;background:#1A1A1A;border:1px solid var(--border);border-radius:6px;">
                     <input type="checkbox" id="is_featured" name="is_featured" value="1" {{ old('is_featured', $product->is_featured) ? 'checked' : '' }} style="width:auto;padding:0;accent-color:var(--accent);">
                     <label for="is_featured" style="margin:0;color:#fff;cursor:pointer;">Featured Product</label>
@@ -87,13 +102,13 @@
             </div>
         </form>
 
-        {{-- DELETE FORM --}}
-        <form method="POST" action="{{ route('admin.products.destroy', $product) }}"
+                {{-- ARCHIVE FORM --}}
+                <form method="POST" action="{{ route('admin.products.archive', $product) }}"
               style="margin-top:1rem;"
-              onsubmit="return confirm('Permanently delete {{ $product->name }}? This cannot be undone.')">
-            @csrf @method('DELETE')
+                            onsubmit="return confirm('Archive {{ $product->name }}? You can restore it from Archived Products.')">
+                        @csrf @method('PATCH')
             <button type="submit" style="background:none;border:1px solid #FF6B6B44;color:#FF6B6B;padding:0.75rem 1.5rem;border-radius:4px;cursor:pointer;">
-                Delete Product
+                                Archive Product
             </button>
         </form>
     </div>
