@@ -17,6 +17,7 @@ class OrderItem extends Model {
         'unit_price',
         'subtotal',
         'product_image',
+        'size_id',
     ];
 
     protected $casts = [
@@ -27,6 +28,10 @@ class OrderItem extends Model {
 
     public function order() {
         return $this->belongsTo(Order::class);
+    }
+
+    public function size() {
+        return $this->belongsTo(Size::class);
     }
 
     public function product() {

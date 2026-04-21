@@ -35,6 +35,27 @@
         input[type="checkbox"] { border-radius: 4px; }
         input[type="radio"] { border-radius: 999px; }
         input:focus, select:focus, textarea:focus { border-color: var(--accent) !important; }
+        /* Style number input arrows */
+        input[type="number"]::-webkit-outer-spin-button,
+        input[type="number"]::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+            opacity: 0.6;
+        }
+        input[type="number"]::-webkit-outer-spin-button:hover,
+        input[type="number"]::-webkit-inner-spin-button:hover {
+            opacity: 1;
+        }
+        input[type="number"] {
+            -moz-appearance: textfield;
+        }
+        input[type="number"]::-webkit-outer-spin-button,
+        input[type="number"]::-webkit-inner-spin-button {
+            -webkit-appearance: inner-spin-button;
+            width: 2em;
+            cursor: pointer;
+            color: #555;
+        }
         label { color: #aaa; font-size: 0.85rem; margin-bottom: 0.3rem; display: block; font-weight: 500; }
         .badge-admin { background: #C8FF0022; color: var(--accent); border: 1px solid var(--accent); padding: 0.2rem 0.6rem; border-radius: 999px; font-size: 0.75rem; }
         .badge-user { background: #ffffff11; color: #aaa; border: 1px solid var(--border); padding: 0.2rem 0.6rem; border-radius: 999px; font-size: 0.75rem; }

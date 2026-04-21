@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 use App\Models\Cart;
 use App\Models\Order;
 use App\Models\Product;
+use App\Models\Coupon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -57,11 +58,26 @@ class CartController extends Controller {
 
         $validated = $request->validate([
             'quantity' => ['nullable', 'integer', 'min:1'],
+            'size_id' => ['nullable', 'integer', 'exists:sizes,id'],
         ]);
+
+        // If product has sizes, size_id is required
+        $sizeId = $validated['size_id'] ?? null;
+
+        if ($product->sizes->count() > 0 && ! $sizeId) {
+            return redirect()->route('products.show', $product)->with('error', 'Please select a size.');
+        }
 
         $quantity = $validated['quantity'] ?? 1;
         $cart = $this->getCart();
-        $item = $cart->items()->where('product_id', $product->id)->first();
+        
+        // Check for existing item with same product and size
+        $query = $cart->items()->where('product_id', $product->id);
+        if ($sizeId) {
+            $query->where('size_id', $sizeId);
+        }
+        $item = $query->first();
+        
         $newQuantity = $item ? $item->quantity + $quantity : $quantity;
 
         if ($newQuantity > $product->stock) {
@@ -78,6 +94,7 @@ class CartController extends Controller {
                 'product_id' => $product->id,
                 'quantity' => $quantity,
                 'price' => $product->price,
+                'size_id' => $sizeId,
             ]);
         }
 
@@ -136,8 +153,17 @@ class CartController extends Controller {
         $cart = $this->getCart()->load('items.product.brand');
 
         $validated = request()->validate([
+            'recipient_name' => ['required', 'string', 'max:255'],
+            'phone' => ['required', 'string', 'max:30'],
+            'address_line1' => ['required', 'string', 'max:255'],
+            'address_line2' => ['nullable', 'string', 'max:255'],
+            'city' => ['required', 'string', 'max:120'],
+            'province' => ['required', 'string', 'max:120'],
+            'postal_code' => ['required', 'string', 'max:20'],
+            'country' => ['required', 'string', 'max:120'],
             'delivery_window' => ['required', 'in:standard,express'],
             'payment_method' => ['required', 'in:card,cash_on_delivery,gcash'],
+            'coupon_code' => ['nullable', 'string', 'max:50'],
         ]);
 
         if ($cart->items->isEmpty()) {
@@ -165,7 +191,23 @@ class CartController extends Controller {
 
         $subtotal = (float) $cart->items->sum(fn ($item) => $item->quantity * $item->price);
         $shippingFee = $validated['delivery_window'] === 'express' ? 249.00 : 0.00;
-        $total = $subtotal + $shippingFee;
+        
+        // Handle coupon
+        $coupon = null;
+        $couponDiscount = 0;
+        if (!empty($validated['coupon_code'])) {
+            $coupon = Coupon::where('code', strtoupper($validated['coupon_code']))->first();
+            
+            if ($coupon && $coupon->isValid() && ($subtotal + $shippingFee) >= $coupon->min_order_amount) {
+                $couponDiscount = $coupon->calculateDiscount($subtotal + $shippingFee);
+            } elseif ($coupon) {
+                return redirect()->route('cart.index')->with('error', 'This coupon is invalid or does not meet minimum order requirements.');
+            } else {
+                return redirect()->route('cart.index')->with('error', 'Coupon code not found.');
+            }
+        }
+        
+        $total = $subtotal + $shippingFee - $couponDiscount;
         $placedAt = now();
         $estimatedArrival = $placedAt->copy()->addDays($deliveryDays[$validated['delivery_window']]);
         $orderNumber = $this->generateOrderNumber();
@@ -181,19 +223,34 @@ class CartController extends Controller {
             'gcash' => 'GCash',
         ];
 
-        $order = DB::transaction(function () use ($cart, $validated, $orderNumber, $placedAt, $estimatedArrival, $subtotal, $shippingFee, $total) {
+        $order = DB::transaction(function () use ($cart, $validated, $orderNumber, $placedAt, $estimatedArrival, $subtotal, $shippingFee, $total, $coupon, $couponDiscount) {
             $order = Order::create([
                 'user_id' => auth()->id(),
                 'order_number' => $orderNumber,
+            'status' => 'pending',
+            'recipient_name' => $validated['recipient_name'],
+            'phone' => $validated['phone'],
+            'address_line1' => $validated['address_line1'],
+            'address_line2' => $validated['address_line2'] ?? null,
+            'city' => $validated['city'],
+            'province' => $validated['province'],
+            'postal_code' => $validated['postal_code'],
+            'country' => $validated['country'],
                 'delivery_window' => $validated['delivery_window'],
                 'payment_method' => $validated['payment_method'],
                 'items_count' => (int) $cart->items->sum('quantity'),
                 'subtotal' => $subtotal,
                 'shipping_fee' => $shippingFee,
+                'coupon_discount' => $couponDiscount,
                 'total' => $total,
                 'placed_at' => $placedAt,
                 'estimated_arrival' => $estimatedArrival,
+                'coupon_id' => $coupon?->id,
             ]);
+
+            if ($coupon) {
+                $coupon->increment('current_uses');
+            }
 
             foreach ($cart->items as $item) {
                 $product = Product::lockForUpdate()->find($item->product_id);
@@ -213,6 +270,7 @@ class CartController extends Controller {
                     'unit_price' => (float) $item->price,
                     'subtotal' => (float) ($item->quantity * $item->price),
                     'product_image' => $item->product->image,
+                    'size_id' => $item->size_id,
                 ]);
             }
 
@@ -223,13 +281,18 @@ class CartController extends Controller {
         $confirmationData = [
             'order_id' => $order->id,
             'order_number' => $order->order_number,
+            'status' => $order->status_label,
             'placed_at' => $order->placed_at->format('M d, Y h:i A'),
             'estimated_arrival' => optional($order->estimated_arrival)->format('M d, Y'),
             'delivery_window' => $deliveryLabels[$order->delivery_window],
             'payment_method' => $paymentLabels[$order->payment_method],
+            'recipient_name' => $order->recipient_name,
+            'phone' => $order->phone,
+            'shipping_address' => trim($order->address_line1 . ($order->address_line2 ? ', ' . $order->address_line2 : '') . ', ' . $order->city . ', ' . $order->province . ' ' . $order->postal_code . ', ' . $order->country),
             'items_count' => (int) $order->items_count,
             'subtotal' => (float) $order->subtotal,
             'shipping_fee' => (float) $order->shipping_fee,
+            'coupon_discount' => (float) $order->coupon_discount,
             'total' => (float) $order->total,
             'items' => $order->items->map(fn ($item) => [
                 'name' => $item->product_name,

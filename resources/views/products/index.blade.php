@@ -51,9 +51,15 @@
 
         {{-- Products --}}
         <div>
-            <form method="GET" action="{{ route('products.index') }}" style="margin-bottom:1.5rem;display:flex;gap:0.75rem;">
+            <form method="GET" action="{{ route('products.index') }}" style="margin-bottom:1.5rem;display:flex;gap:0.75rem;flex-wrap:wrap;align-items:center;">
                 @if(request('brand'))<input type="hidden" name="brand" value="{{ request('brand') }}">@endif
-                <input type="text" name="search" value="{{ request('search') }}" placeholder="Search products...">
+                @if(request('category'))<input type="hidden" name="category" value="{{ request('category') }}">@endif
+                <input type="text" name="search" value="{{ request('search') }}" placeholder="Search products..." style="flex:1;min-width:220px;">
+                <div style="display:flex;gap:0.5rem;align-items:center;">
+                    <input type="number" name="min_price" value="{{ request('min_price') }}" placeholder="Min (₱)" step="0.01" style="width:120px;">
+                    <span style="color:#666;">-</span>
+                    <input type="number" name="max_price" value="{{ request('max_price') }}" placeholder="Max (₱)" step="0.01" style="width:120px;">
+                </div>
                 <button type="submit" class="btn-accent" style="border:none;cursor:pointer;white-space:nowrap;">Search</button>
             </form>
 

@@ -26,6 +26,7 @@
                     <div style="display:flex;align-items:center;gap:0.7rem;flex-wrap:wrap;">
                         <span style="font-size:0.75rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--accent);font-weight:700;">{{ $order->order_number }}</span>
                         <span style="font-size:0.75rem;color:#777;">{{ $order->placed_at->format('M d, Y h:i A') }}</span>
+                        <span style="font-size:0.72rem;padding:0.22rem 0.55rem;border-radius:999px;background:{{ $order->status_color }}22;color:{{ $order->status_color }};border:1px solid {{ $order->status_color }}44;text-transform:uppercase;letter-spacing:0.08em;font-weight:700;">{{ $order->status_label }}</span>
                     </div>
                     <p style="margin:0.45rem 0 0;color:#fff;font-weight:600;">{{ $order->delivery_window_label }} • {{ $order->payment_method_label }}</p>
                     <p style="margin:0.25rem 0 0;color:#8f8f8f;font-size:0.86rem;">{{ $order->items_count }} item(s) • ETA {{ optional($order->estimated_arrival)->format('M d, Y') }}</p>

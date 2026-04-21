@@ -74,20 +74,128 @@
 
             @auth
                 @if(!auth()->user()->isAdmin())
-                <form method="POST" action="{{ route('cart.store', $product) }}" style="display:grid;gap:0.85rem;">
+                <form method="POST" action="{{ route('cart.store', $product) }}" style="display:grid;gap:1.25rem;" onsubmit="return validateCart(event)">
                     @csrf
 
+                    {{-- Size Selection --}}
+                    @if($product->sizes->count())
+                    <div style="padding:1rem;background:#1A1A1A;border:1px solid var(--border);border-radius:10px;">
+                        <label style="color:#fff;display:block;margin-bottom:0.75rem;font-weight:600;font-size:0.95rem;">Select Size *</label>
+                        <div style="display:flex;gap:0.5rem;flex-wrap:wrap;">
+                            @foreach($product->sizes as $size)
+                                <label style="display:flex;align-items:center;gap:0.4rem;cursor:pointer;padding:0.5rem 0.75rem;background:#141414;border:1px solid var(--border);border-radius:8px;transition:all 0.2s;" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="if(!this.querySelector('input').checked) this.style.borderColor='var(--border)'">
+                                    <input type="radio" name="size_id" value="{{ $size->id }}" style="width:auto;accent-color:var(--accent);" onchange="this.parentElement.style.borderColor='var(--accent)'; this.parentElement.style.background='rgba(200,255,0,0.05)'">
+                                    <span style="color:#aaa;font-size:0.9rem;">{{ $size->name }}</span>
+                                </label>
+                            @endforeach
+                        </div>
+                    </div>
+                    @endif
+
+                    {{-- Quantity & Action Buttons --}}
                     <div style="display:flex;gap:0.75rem;align-items:flex-end;flex-wrap:wrap;">
                         <div style="flex:0 0 120px;">
-                            <label for="quantity" style="margin-bottom:0.45rem;color:var(--muted);font-size:0.8rem;">Quantity</label>
+                            <label for="quantity" style="margin-bottom:0.45rem;color:var(--muted);font-size:0.8rem;display:block;">Quantity</label>
                             <input id="quantity" type="number" name="quantity" min="1" max="{{ max($product->stock, 1) }}" value="1" {{ $product->stock < 1 ? 'disabled' : '' }}>
                         </div>
 
-                        <button type="submit" class="btn-accent" style="border:none;cursor:pointer;font-size:1rem;padding:0.875rem 2.5rem;flex:1;{{ $product->stock < 1 ? 'opacity:0.4;cursor:not-allowed;' : '' }}" {{ $product->stock < 1 ? 'disabled' : '' }}>
+                        <button type="submit" class="btn-accent" style="border:none;cursor:pointer;font-size:1rem;padding:0.875rem 2.5rem;flex:1;{{ $product->stock < 1 ? 'opacity:0.4;cursor:not-allowed;' : '' }};align-self:flex-end;" {{ $product->stock < 1 ? 'disabled' : '' }}>
                             Add to Cart
+                        </button>
+
+                        @php
+                            $inWishlist = auth()->user()->wishedProducts()->where('product_id', $product->id)->exists() ?? false;
+                        @endphp
+                        <button id="wishlist-toggle"
+                                type="button"
+                                data-toggle-url="{{ route('wishlist.toggle', $product) }}"
+                                data-in-wishlist="{{ $inWishlist ? '1' : '0' }}"
+                                data-skip-size-validation="1"
+                                class="btn-outline"
+                                style="border:none;cursor:pointer;font-size:1rem;padding:0.875rem 1.5rem;{{ $inWishlist ? 'background:rgba(200,255,0,0.1);border-color:var(--accent);color:var(--accent);' : '' }}">
+                            {{ $inWishlist ? '❤ Wishlisted' : '🤍 Wishlist' }}
                         </button>
                     </div>
                 </form>
+
+                <script>
+                    function validateCart(event) {
+                        if (event.submitter && event.submitter.dataset.skipSizeValidation === '1') {
+                            return true;
+                        }
+
+                        const hasSizes = {{ $product->sizes->count() ? 'true' : 'false' }};
+                        if (hasSizes) {
+                            const selectedSize = document.querySelector('input[name="size_id"]:checked');
+                            if (!selectedSize) {
+                                event.preventDefault();
+                                alert('Please select a size before adding to cart');
+                                return false;
+                            }
+                        }
+                        return true;
+                    }
+
+                    (function () {
+                        const button = document.getElementById('wishlist-toggle');
+                        if (!button) {
+                            return;
+                        }
+
+                        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+                        const activeStyle = 'background:rgba(200,255,0,0.1);border-color:var(--accent);color:var(--accent);';
+                        const defaultStyle = 'background:transparent;border-color:var(--border);color:#fff;';
+
+                        function setButtonState(isWishlisted) {
+                            button.dataset.inWishlist = isWishlisted ? '1' : '0';
+                            button.textContent = isWishlisted ? '❤ Wishlisted' : '🤍 Wishlist';
+                            if (isWishlisted) {
+                                button.style.background = 'rgba(200,255,0,0.1)';
+                                button.style.borderColor = 'var(--accent)';
+                                button.style.color = 'var(--accent)';
+                            } else {
+                                button.style.background = 'transparent';
+                                button.style.borderColor = 'var(--border)';
+                                button.style.color = '#fff';
+                            }
+                        }
+
+                        button.addEventListener('click', async function () {
+                            if (!csrfToken) {
+                                return;
+                            }
+
+                            const previousText = button.textContent;
+                            const previousState = button.dataset.inWishlist === '1';
+                            button.disabled = true;
+                            button.textContent = 'Updating...';
+
+                            try {
+                                const response = await fetch(button.dataset.toggleUrl, {
+                                    method: 'POST',
+                                    headers: {
+                                        'X-CSRF-TOKEN': csrfToken,
+                                        'Accept': 'application/json',
+                                        'X-Requested-With': 'XMLHttpRequest',
+                                    },
+                                });
+
+                                if (!response.ok) {
+                                    throw new Error('Wishlist request failed');
+                                }
+
+                                const data = await response.json();
+                                setButtonState(data.status === 'added');
+                            } catch (error) {
+                                setButtonState(previousState);
+                                button.textContent = previousText;
+                                alert('Could not update wishlist right now. Please try again.');
+                            } finally {
+                                button.disabled = false;
+                            }
+                        });
+                    })();
+                </script>
                 @else
                 <a href="{{ route('admin.products.edit', $product) }}" class="btn-accent" style="display:block;text-align:center;padding:0.875rem;">Edit Product</a>
                 @endif
@@ -124,6 +232,135 @@
         </div>
     </div>
     @endif
+
+    {{-- Reviews Section --}}
+    <div style="margin-top:4rem;padding:2rem;background:#1A1A1A;border:1px solid var(--border);border-radius:14px;">
+        <h2 style="color:#fff;font-size:1.5rem;margin-bottom:1.5rem;font-weight:600;">Customer Reviews</h2>
+
+        @auth
+            @if(!auth()->user()->isAdmin())
+                @php
+                    $hasOrdered = auth()->user()->orders()
+                        ->whereHas('items', fn($query) => $query->where('product_id', $product->id))
+                        ->exists();
+                    $hasReviewed = auth()->user()->reviews()
+                        ->where('product_id', $product->id)
+                        ->exists();
+                @endphp
+
+                @if($hasOrdered)
+                    @if(!$hasReviewed)
+                        <div style="margin-bottom:2rem;padding:1.5rem;background:#141414;border-radius:12px;border:1px solid var(--border);">
+                            <h3 style="color:#fff;margin-bottom:1rem;font-size:1.1rem;">✓ Share Your Experience</h3>
+                            <form method="POST" action="{{ route('reviews.store', $product) }}" style="display:grid;gap:1rem;">
+                                @csrf
+
+                                {{-- Star Rating --}}
+                                <div>
+                                    <label style="color:#fff;display:block;margin-bottom:0.75rem;font-weight:600;font-size:0.9rem;">How would you rate this product? *</label>
+                                    <div style="display:flex;gap:0.75rem;align-items:center;">
+                                        <div id="starContainer" style="display:flex;gap:0.3rem;">
+                                            @for($i = 1; $i <= 5; $i++)
+                                                <label style="cursor:pointer;transition:transform 0.2s;" onmouseover="this.style.transform='scale(1.2)'" onmouseout="this.style.transform='scale(1)'">
+                                                    <input type="radio" name="rating" value="{{ $i }}" style="display:none;" onchange="updateStars()">
+                                                    <span id="star{{ $i }}" style="color:#444;font-size:2rem;transition:color 0.2s;display:block;width:2rem;text-align:center;">★</span>
+                                                </label>
+                                            @endfor
+                                        </div>
+                                        <span id="ratingText" style="color:var(--muted);font-size:0.9rem;"></span>
+                                    </div>
+                                </div>
+
+                                {{-- Review Title --}}
+                                <div>
+                                    <label for="review_title" style="color:#fff;display:block;margin-bottom:0.5rem;font-weight:600;font-size:0.9rem;">Review Title *</label>
+                                    <input id="review_title" type="text" name="title" placeholder="e.g., Great quality and fit!" value="{{ old('title') }}" style="width:100%;" required>
+                                </div>
+
+                                {{-- Review Comment --}}
+                                <div>
+                                    <label for="review_comment" style="color:#fff;display:block;margin-bottom:0.5rem;font-weight:600;font-size:0.9rem;">Your Review *</label>
+                                    <textarea id="review_comment" name="comment" placeholder="Share your thoughts about this product..." style="width:100%;height:120px;resize:vertical;" required>{{ old('comment') }}</textarea>
+                                </div>
+
+                                <button type="submit" class="btn-accent" style="border:none;cursor:pointer;padding:0.75rem 1.5rem;align-self:flex-start;">Submit Review</button>
+                            </form>
+
+                            <script>
+                                function updateStars() {
+                                    const checked = document.querySelector('input[name="rating"]:checked');
+                                    const rating = checked ? parseInt(checked.value) : 0;
+                                    const labels = ['Poor', 'Fair', 'Good', 'Excellent', 'Perfect'];
+                                    
+                                    for (let i = 1; i <= 5; i++) {
+                                        const star = document.getElementById('star' + i);
+                                        if (i <= rating) {
+                                            star.style.color = 'var(--accent)';
+                                        } else {
+                                            star.style.color = '#444';
+                                        }
+                                    }
+                                    
+                                    const ratingText = document.getElementById('ratingText');
+                                    ratingText.textContent = rating > 0 ? labels[rating - 1] : '';
+                                }
+                                
+                                // Initialize stars on page load
+                                document.querySelectorAll('input[name="rating"]').forEach(input => {
+                                    input.addEventListener('change', updateStars);
+                                    if (input.checked) {
+                                        updateStars();
+                                    }
+                                });
+                            </script>
+                        </div>
+                    @else
+                        <div style="margin-bottom:2rem;padding:1rem;background:#141414;border-radius:12px;border:1px solid #4ADE8044;border-left:3px solid #4ADE80;">
+                            <p style="color:#4ADE80;margin:0;font-weight:600;">✓ You have already reviewed this product.</p>
+                        </div>
+                    @endif
+                @else
+                    <div style="margin-bottom:2rem;padding:1rem;background:#141414;border-radius:12px;border:1px solid var(--border);">
+                        <p style="color:#aaa;margin:0;">Only customers who have purchased this product can leave reviews.</p>
+                    </div>
+                @endif
+            @endif
+        @endauth
+
+        {{-- Display Reviews --}}
+        @php
+            $reviews = $product->reviews()->where('is_approved', true)->latest()->get();
+        @endphp
+
+        @if($reviews->count() > 0)
+            <div style="display:grid;gap:1rem;">
+                @foreach($reviews as $review)
+                    <div style="padding:1.25rem;background:#141414;border-radius:10px;border:1px solid var(--border);">
+                        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:0.75rem;flex-wrap:wrap;gap:0.5rem;">
+                            <div>
+                                <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.25rem;">
+                                    <p style="color:var(--accent);font-weight:600;margin:0;font-size:0.95rem;">{{ $review->user->name }}</p>
+                                    @if($review->is_verified_purchase)
+                                        <span style="color:#4ADE80;font-size:0.8rem;font-weight:600;">✓ VERIFIED</span>
+                                    @endif
+                                </div>
+                                <p style="color:#888;font-size:0.8rem;margin:0;">{{ $review->created_at->format('M d, Y') }}</p>
+                            </div>
+                            <div style="color:var(--accent);font-size:1.25rem;letter-spacing:0.1em;">
+                                @for($i = 0; $i < $review->rating; $i++)★@endfor
+                            </div>
+                        </div>
+                        <p style="color:#fff;font-weight:600;margin:0.5rem 0 0.75rem;font-size:1rem;">{{ $review->title }}</p>
+                        <p style="color:#aaa;margin:0;line-height:1.6;">{{ $review->comment }}</p>
+                    </div>
+                @endforeach
+            </div>
+        @else
+            <div style="padding:2rem;text-align:center;background:#141414;border-radius:10px;border:1px dashed var(--border);">
+                <p style="color:#666;margin:0;font-size:0.95rem;">No reviews yet. Be the first to share your experience!</p>
+            </div>
+        @endif
+    </div>
 
 </div>
 

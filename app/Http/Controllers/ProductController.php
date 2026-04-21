@@ -20,7 +20,17 @@ class ProductController extends Controller {
             $query->where('name', 'like', '%' . $request->search . '%');
         }
 
-        $products      = $query->latest()->paginate(12);
+        // Price range filter
+        if ($request->min_price) {
+            $query->where('price', '>=', (float) $request->min_price);
+        }
+        if ($request->max_price) {
+            $query->where('price', '<=', (float) $request->max_price);
+        }
+
+        $query->latest();
+
+        $products      = $query->paginate(12)->withQueryString();
         $selectedBrand = $request->brand ? Brand::where('slug', $request->brand)->first() : null;
 
         return view('products.index', compact('products', 'brands', 'selectedBrand'));

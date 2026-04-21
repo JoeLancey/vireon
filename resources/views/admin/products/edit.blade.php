@@ -98,6 +98,7 @@
 
             <div style="margin-top:2rem;display:flex;gap:1rem;flex-wrap:wrap;">
                 <button type="submit" class="btn-accent" style="border:none;cursor:pointer;font-size:1rem;padding:0.75rem 2rem;">Save Changes</button>
+                <a href="{{ route('admin.products.manage-sizes', $product) }}" class="btn-outline" style="text-decoration:none;display:inline-block;">Manage Sizes</a>
                 <a href="{{ route('admin.products.index') }}" class="btn-outline">Cancel</a>
             </div>
         </form>

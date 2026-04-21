@@ -28,4 +28,19 @@ class User extends Authenticatable {
     {
         return $this->hasMany(Order::class);
     }
+
+    public function wishlist()
+    {
+        return $this->hasMany(Wishlist::class);
+    }
+
+    public function wishedProducts()
+    {
+        return $this->belongsToMany(Product::class, 'wishlists');
+    }
+
+    public function reviews()
+    {
+        return $this->hasMany(Review::class);
+    }
 }

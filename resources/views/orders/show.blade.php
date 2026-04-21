@@ -9,7 +9,17 @@
             <h1 class="font-display" style="font-size:clamp(2rem,4.6vw,3.4rem);line-height:0.95;margin:0.55rem 0 0;color:#fff;">ORDER {{ $order->order_number }}</h1>
             <p style="margin:0.55rem 0 0;color:#9a9a9a;">Placed {{ $order->placed_at->format('M d, Y h:i A') }}</p>
         </div>
-        <a href="{{ route('products.index') }}" class="btn-outline">Buy Again</a>
+        <div style="display:flex;gap:0.65rem;flex-wrap:wrap;align-items:center;">
+            <span style="font-size:0.78rem;padding:0.35rem 0.7rem;border-radius:999px;background:{{ $order->status_color }}22;color:{{ $order->status_color }};border:1px solid {{ $order->status_color }}44;text-transform:uppercase;letter-spacing:0.08em;font-weight:700;">{{ $order->status_label }}</span>
+            @if($order->canBeCancelled())
+            <form method="POST" action="{{ route('orders.cancel', $order) }}">
+                @csrf
+                @method('PATCH')
+                <button type="submit" class="btn-outline" style="background:none;cursor:pointer;border-color:#FF6B6B44;color:#FF6B6B;">Cancel Order</button>
+            </form>
+            @endif
+            <a href="{{ route('products.index') }}" class="btn-outline">Buy Again</a>
+        </div>
     </div>
 
     <div style="display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:1.3rem;align-items:start;">
@@ -30,6 +40,10 @@
                 <div style="padding:0.8rem;border-radius:10px;border:1px solid var(--border);background:#111;">
                     <p style="margin:0;color:#777;font-size:0.72rem;letter-spacing:0.12em;text-transform:uppercase;">ETA</p>
                     <p style="margin:0.35rem 0 0;color:#fff;font-weight:600;">{{ optional($order->estimated_arrival)->format('M d, Y') }}</p>
+                </div>
+                <div style="padding:0.8rem;border-radius:10px;border:1px solid var(--border);background:#111;grid-column:1/-1;">
+                    <p style="margin:0;color:#777;font-size:0.72rem;letter-spacing:0.12em;text-transform:uppercase;">Ship To</p>
+                    <p style="margin:0.35rem 0 0;color:#fff;font-weight:600;line-height:1.6;">{{ $order->recipient_name }}<br>{{ $order->address_line1 }}@if($order->address_line2), {{ $order->address_line2 }}@endif<br>{{ $order->city }}, {{ $order->province }} {{ $order->postal_code }}<br>{{ $order->country }}<br>{{ $order->phone }}</p>
                 </div>
             </div>
 
@@ -68,6 +82,11 @@
             <div style="display:flex;justify-content:space-between;color:#fff;font-size:1.1rem;font-weight:700;margin-top:0.9rem;padding-top:0.9rem;border-top:1px solid var(--border);">
                 <span>Total Paid</span>
                 <span>₱{{ number_format((float) $order->total, 2) }}</span>
+            </div>
+
+            <div style="margin-top:1rem;padding:0.95rem;border-radius:12px;background:#111;border:1px solid var(--border);">
+                <p style="margin:0 0 0.3rem;color:#777;font-size:0.72rem;letter-spacing:0.12em;text-transform:uppercase;">Tracking</p>
+                <p style="margin:0;color:#fff;font-weight:600;">{{ $order->tracking_number ?? 'Not assigned yet' }}</p>
             </div>
         </aside>
     </div>

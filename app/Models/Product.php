@@ -46,4 +46,29 @@ class Product extends Model {
     {
         return $this->hasMany(OrderItem::class);
     }
+
+    public function reviews()
+    {
+        return $this->hasMany(Review::class);
+    }
+
+    public function wishlistUsers()
+    {
+        return $this->belongsToMany(User::class, 'wishlists');
+    }
+
+    public function sizes() {
+        return $this->belongsToMany(Size::class, 'product_size');
+    }
+
+    public function getAverageRatingAttribute(): float
+    {
+        $average = $this->reviews()->where('is_approved', true)->avg('rating');
+        return round($average ?? 0, 1);
+    }
+
+    public function getReviewCountAttribute(): int
+    {
+        return $this->reviews()->where('is_approved', true)->count();
+    }
 }

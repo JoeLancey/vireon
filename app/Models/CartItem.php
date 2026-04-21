@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 class CartItem extends Model {
     use HasFactory;
 
-    protected $fillable = ['cart_id', 'product_id', 'quantity', 'price'];
+    protected $fillable = ['cart_id', 'product_id', 'quantity', 'price', 'size_id'];
 
     public function cart() {
         return $this->belongsTo(Cart::class);
@@ -15,6 +15,10 @@ class CartItem extends Model {
 
     public function product() {
         return $this->belongsTo(Product::class);
+    }
+
+    public function size() {
+        return $this->belongsTo(Size::class);
     }
 
     public function subtotal(): float {

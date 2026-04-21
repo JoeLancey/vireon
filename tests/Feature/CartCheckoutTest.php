@@ -59,6 +59,14 @@ class CartCheckoutTest extends TestCase
         $this->createCartWithOneItem($user);
 
         $response = $this->actingAs($user)->post(route('cart.checkout'), [
+            'recipient_name' => 'Jane Doe',
+            'phone' => '09171234567',
+            'address_line1' => '123 Main Street',
+            'address_line2' => 'Unit 4B',
+            'city' => 'Makati',
+            'province' => 'Metro Manila',
+            'postal_code' => '1223',
+            'country' => 'Philippines',
             'delivery_window' => 'standard',
             'payment_method' => 'card',
         ]);
@@ -72,6 +80,14 @@ class CartCheckoutTest extends TestCase
         $this->createCartWithOneItem($user);
 
         $response = $this->actingAs($user)->post(route('cart.checkout'), [
+            'recipient_name' => 'Jane Doe',
+            'phone' => '09171234567',
+            'address_line1' => '123 Main Street',
+            'address_line2' => null,
+            'city' => 'Makati',
+            'province' => 'Metro Manila',
+            'postal_code' => '1223',
+            'country' => 'Philippines',
             'delivery_window' => 'express',
             'payment_method' => 'gcash',
         ]);

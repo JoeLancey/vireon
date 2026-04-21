@@ -55,6 +55,16 @@
                 <p style="margin:0;color:#d9e8a8;">{{ $confirmation['payment_method'] }}</p>
             </div>
 
+            <div style="margin-top:1rem;padding:1rem;border-radius:14px;background:#121212;border:1px solid var(--border);">
+                <p style="margin:0 0 0.35rem;color:#fff;font-size:0.86rem;font-weight:700;letter-spacing:0.07em;text-transform:uppercase;">Shipping</p>
+                <p style="margin:0;color:#9a9a9a;line-height:1.6;">{{ $confirmation['recipient_name'] }}<br>{{ $confirmation['shipping_address'] }}<br>{{ $confirmation['phone'] }}</p>
+            </div>
+
+            <div style="margin-top:1rem;padding:1rem;border-radius:14px;background:rgba(56,189,248,0.06);border:1px solid rgba(56,189,248,0.14);">
+                <p style="margin:0 0 0.35rem;color:#fff;font-size:0.86rem;font-weight:700;letter-spacing:0.07em;text-transform:uppercase;">Order Status</p>
+                <p style="margin:0;color:#cfefff;">{{ $confirmation['status'] }}</p>
+            </div>
+
             <div style="margin-top:1.3rem;display:grid;gap:0.75rem;">
                 @foreach($confirmation['items'] as $item)
                 <div style="display:grid;grid-template-columns:64px minmax(0,1fr) auto;gap:0.8rem;align-items:center;padding:0.75rem;border-radius:12px;border:1px solid var(--border);background:#111;">

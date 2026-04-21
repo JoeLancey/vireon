@@ -77,6 +77,9 @@
                     <div style="min-width:0;">
                         <p style="color:var(--muted);font-size:0.78rem;margin:0 0 0.35rem;text-transform:uppercase;letter-spacing:0.08em;">{{ $item->product->brand->name }} • {{ ucfirst($item->product->category) }}</p>
                         <a href="{{ route('products.show', $item->product) }}" style="color:#fff;text-decoration:none;font-size:1.15rem;font-weight:600;line-height:1.2;">{{ $item->product->name }}</a>
+                        @if($item->size)
+                            <p style="color:#aaa;font-size:0.85rem;margin:0.35rem 0 0;">Size: <span style="color:#fff;font-weight:600;">{{ $item->size->name }}</span></p>
+                        @endif
                         <p style="color:var(--accent);font-size:1.15rem;font-weight:700;margin:0.5rem 0 0.35rem;">₱{{ number_format($item->price, 2) }}</p>
                         <p style="color:{{ $item->product->stock > 0 ? '#4ADE80' : '#FF6B6B' }};font-size:0.8rem;margin:0;">
                             {{ $item->product->stock > 0 ? $item->product->stock . ' available' : 'Out of stock' }}
@@ -116,6 +119,22 @@
                 <form method="POST" action="{{ route('cart.checkout') }}" style="display:grid;gap:1rem;">
                     @csrf
 
+                    <div style="padding:0.9rem 1rem;border-radius:14px;border:1px solid var(--border);background:#121212;display:grid;gap:0.75rem;">
+                        <p style="margin:0;color:#fff;font-size:0.88rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;">Shipping Address</p>
+                        <input type="text" name="recipient_name" value="{{ old('recipient_name', auth()->user()->name) }}" placeholder="Full name">
+                        <input type="text" name="phone" value="{{ old('phone') }}" placeholder="Phone number">
+                        <input type="text" name="address_line1" value="{{ old('address_line1') }}" placeholder="Street address">
+                        <input type="text" name="address_line2" value="{{ old('address_line2') }}" placeholder="Apartment, suite, unit, building (optional)">
+                        <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0.75rem;">
+                            <input type="text" name="city" value="{{ old('city') }}" placeholder="City">
+                            <input type="text" name="province" value="{{ old('province') }}" placeholder="Province">
+                        </div>
+                        <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0.75rem;">
+                            <input type="text" name="postal_code" value="{{ old('postal_code') }}" placeholder="Postal code">
+                            <input type="text" name="country" value="{{ old('country', 'Philippines') }}" placeholder="Country">
+                        </div>
+                    </div>
+
                     <div style="padding:0.9rem 1rem;border-radius:14px;border:1px solid var(--border);background:#121212;">
                         <p style="margin:0 0 0.75rem;color:#fff;font-size:0.88rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;">Delivery</p>
                         <label style="display:flex;align-items:flex-start;gap:0.65rem;margin-bottom:0.65rem;cursor:pointer;padding:0.7rem;border:1px solid #2f2f2f;border-radius:10px;">
@@ -132,6 +151,12 @@
                                 <span style="display:block;color:#8f8f8f;font-size:0.76rem;">1-2 business days • ₱249</span>
                             </span>
                         </label>
+                    </div>
+
+                    <div style="padding:0.9rem 1rem;border-radius:14px;border:1px solid var(--border);background:#121212;">
+                        <p style="margin:0 0 0.75rem;color:#fff;font-size:0.88rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;">Coupon Code (Optional)</p>
+                        <input type="text" name="coupon_code" value="{{ old('coupon_code') }}" placeholder="Enter coupon code" style="margin-bottom:0.5rem;">
+                        <p style="color:#8f8f8f;font-size:0.75rem;margin:0;">Enter a valid coupon code to get discounts</p>
                     </div>
 
                     <div style="padding:0.9rem 1rem;border-radius:14px;border:1px solid var(--border);background:#121212;">
