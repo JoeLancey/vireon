@@ -33,12 +33,6 @@
                 <p class="font-display" style="font-size:2.5rem;color:#38BDF8;line-height:1;">{{ $stats['orders'] }}</p>
             </div>
         </a>
-        <a href="{{ route('admin.coupons.index') }}" style="text-decoration:none;">
-            <div class="card" style="padding:1.5rem;transition:border-color 0.2s;" onmouseover="this.style.borderColor='#FBBF24'" onmouseout="this.style.borderColor='var(--border)'">
-                <p style="color:var(--muted);font-size:0.8rem;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:0.5rem;">Coupons</p>
-                <p class="font-display" style="font-size:2.5rem;color:#FBBF24;line-height:1;">0</p>
-            </div>
-        </a>
         <a href="{{ route('admin.sizes.index') }}" style="text-decoration:none;">
             <div class="card" style="padding:1.5rem;transition:border-color 0.2s;" onmouseover="this.style.borderColor='#A78BFA'" onmouseout="this.style.borderColor='var(--border)'">
                 <p style="color:var(--muted);font-size:0.8rem;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:0.5rem;">Sizes</p>
@@ -58,7 +52,6 @@
     <div style="display:flex;gap:1rem;margin-bottom:2.5rem;flex-wrap:wrap;">
         <a href="{{ route('admin.dashboard', ['tab' => 'products']) }}" class="btn-accent">Manage Products & Brands</a>
         <a href="{{ route('admin.orders.index') }}" class="btn-outline">Manage Orders</a>
-        <a href="{{ route('admin.coupons.index') }}" class="btn-outline">Manage Coupons</a>
         <a href="{{ route('admin.products.create') }}" class="btn-outline">+ Add Product</a>
         <a href="{{ route('admin.brands.create') }}" class="btn-outline">+ Add Brand</a>
         <a href="{{ route('admin.products.archived') }}" class="btn-outline">View Archived Products</a>

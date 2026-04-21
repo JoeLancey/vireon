@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 use App\Models\Cart;
 use App\Models\Order;
 use App\Models\Product;
-use App\Models\Coupon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -36,7 +35,7 @@ class CartController extends Controller {
     public function index() {
         $this->ensureCustomerAccess();
 
-        $cart = $this->getCart()->load(['items.product.brand']);
+        $cart = $this->getCart()->load(['items.product.brand', 'items.size']);
 
         $cart->items = $cart->items
             ->filter(fn ($item) => $item->product && ! $item->product->is_archived)
@@ -68,6 +67,13 @@ class CartController extends Controller {
             return redirect()->route('products.show', $product)->with('error', 'Please select a size.');
         }
 
+        if ($sizeId) {
+            $selectedSize = $product->sizes()->where('sizes.id', $sizeId)->first();
+            if (! $selectedSize) {
+                return redirect()->route('products.show', $product)->with('error', 'Invalid size selected for this product.');
+            }
+        }
+
         $quantity = $validated['quantity'] ?? 1;
         $cart = $this->getCart();
         
@@ -79,6 +85,13 @@ class CartController extends Controller {
         $item = $query->first();
         
         $newQuantity = $item ? $item->quantity + $quantity : $quantity;
+
+        if ($sizeId) {
+            $availableSizeStock = (int) ($selectedSize->pivot->stock ?? 0);
+            if ($newQuantity > $availableSizeStock) {
+                return redirect()->route('products.show', $product)->with('error', 'Requested quantity exceeds available stock for that size.');
+            }
+        }
 
         if ($newQuantity > $product->stock) {
             return redirect()->route('products.show', $product)->with('error', 'Requested quantity exceeds available stock.');
@@ -150,7 +163,7 @@ class CartController extends Controller {
     public function checkout() {
         $this->ensureCustomerAccess();
 
-        $cart = $this->getCart()->load('items.product.brand');
+        $cart = $this->getCart()->load('items.product.brand', 'items.size');
 
         $validated = request()->validate([
             'recipient_name' => ['required', 'string', 'max:255'],
@@ -163,7 +176,6 @@ class CartController extends Controller {
             'country' => ['required', 'string', 'max:120'],
             'delivery_window' => ['required', 'in:standard,express'],
             'payment_method' => ['required', 'in:card,cash_on_delivery,gcash'],
-            'coupon_code' => ['nullable', 'string', 'max:50'],
         ]);
 
         if ($cart->items->isEmpty()) {
@@ -182,6 +194,14 @@ class CartController extends Controller {
             if ($item->quantity > $item->product->stock) {
                 return redirect()->route('cart.index')->with('error', 'Some cart items exceed available stock. Please update your cart.');
             }
+
+            if ($item->size_id) {
+                $size = $item->product->sizes()->where('sizes.id', $item->size_id)->first();
+                $sizeStock = (int) ($size?->pivot?->stock ?? 0);
+                if (! $size || $item->quantity > $sizeStock) {
+                    return redirect()->route('cart.index')->with('error', 'Some selected sizes are out of stock. Please update your cart.');
+                }
+            }
         }
 
         $deliveryDays = [
@@ -191,23 +211,8 @@ class CartController extends Controller {
 
         $subtotal = (float) $cart->items->sum(fn ($item) => $item->quantity * $item->price);
         $shippingFee = $validated['delivery_window'] === 'express' ? 249.00 : 0.00;
-        
-        // Handle coupon
-        $coupon = null;
-        $couponDiscount = 0;
-        if (!empty($validated['coupon_code'])) {
-            $coupon = Coupon::where('code', strtoupper($validated['coupon_code']))->first();
-            
-            if ($coupon && $coupon->isValid() && ($subtotal + $shippingFee) >= $coupon->min_order_amount) {
-                $couponDiscount = $coupon->calculateDiscount($subtotal + $shippingFee);
-            } elseif ($coupon) {
-                return redirect()->route('cart.index')->with('error', 'This coupon is invalid or does not meet minimum order requirements.');
-            } else {
-                return redirect()->route('cart.index')->with('error', 'Coupon code not found.');
-            }
-        }
-        
-        $total = $subtotal + $shippingFee - $couponDiscount;
+
+        $total = $subtotal + $shippingFee;
         $placedAt = now();
         $estimatedArrival = $placedAt->copy()->addDays($deliveryDays[$validated['delivery_window']]);
         $orderNumber = $this->generateOrderNumber();
@@ -223,7 +228,7 @@ class CartController extends Controller {
             'gcash' => 'GCash',
         ];
 
-        $order = DB::transaction(function () use ($cart, $validated, $orderNumber, $placedAt, $estimatedArrival, $subtotal, $shippingFee, $total, $coupon, $couponDiscount) {
+        $order = DB::transaction(function () use ($cart, $validated, $orderNumber, $placedAt, $estimatedArrival, $subtotal, $shippingFee, $total) {
             $order = Order::create([
                 'user_id' => auth()->id(),
                 'order_number' => $orderNumber,
@@ -241,22 +246,30 @@ class CartController extends Controller {
                 'items_count' => (int) $cart->items->sum('quantity'),
                 'subtotal' => $subtotal,
                 'shipping_fee' => $shippingFee,
-                'coupon_discount' => $couponDiscount,
                 'total' => $total,
                 'placed_at' => $placedAt,
                 'estimated_arrival' => $estimatedArrival,
-                'coupon_id' => $coupon?->id,
             ]);
-
-            if ($coupon) {
-                $coupon->increment('current_uses');
-            }
 
             foreach ($cart->items as $item) {
                 $product = Product::lockForUpdate()->find($item->product_id);
 
                 if (! $product || $this->productIsArchived($product) || $item->quantity > $product->stock) {
                     abort(409, 'Checkout failed due to stock changes.');
+                }
+
+                if ($item->size_id) {
+                    $size = $product->sizes()->where('sizes.id', $item->size_id)->first();
+                    $sizeStock = (int) ($size?->pivot?->stock ?? 0);
+
+                    if (! $size || $item->quantity > $sizeStock) {
+                        abort(409, 'Checkout failed due to size stock changes.');
+                    }
+
+                    DB::table('product_size')
+                        ->where('product_id', $product->id)
+                        ->where('size_id', $item->size_id)
+                        ->decrement('stock', $item->quantity);
                 }
 
                 $product->decrement('stock', $item->quantity);
@@ -292,7 +305,6 @@ class CartController extends Controller {
             'items_count' => (int) $order->items_count,
             'subtotal' => (float) $order->subtotal,
             'shipping_fee' => (float) $order->shipping_fee,
-            'coupon_discount' => (float) $order->coupon_discount,
             'total' => (float) $order->total,
             'items' => $order->items->map(fn ($item) => [
                 'name' => $item->product_name,

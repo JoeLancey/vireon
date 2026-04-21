@@ -154,12 +154,6 @@
                     </div>
 
                     <div style="padding:0.9rem 1rem;border-radius:14px;border:1px solid var(--border);background:#121212;">
-                        <p style="margin:0 0 0.75rem;color:#fff;font-size:0.88rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;">Coupon Code (Optional)</p>
-                        <input type="text" name="coupon_code" value="{{ old('coupon_code') }}" placeholder="Enter coupon code" style="margin-bottom:0.5rem;">
-                        <p style="color:#8f8f8f;font-size:0.75rem;margin:0;">Enter a valid coupon code to get discounts</p>
-                    </div>
-
-                    <div style="padding:0.9rem 1rem;border-radius:14px;border:1px solid var(--border);background:#121212;">
                         <p style="margin:0 0 0.75rem;color:#fff;font-size:0.88rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;">Payment Method</p>
                         <label style="display:flex;align-items:flex-start;gap:0.65rem;margin-bottom:0.65rem;cursor:pointer;padding:0.7rem;border:1px solid #2f2f2f;border-radius:10px;">
                             <input type="radio" name="payment_method" value="card" {{ old('payment_method', 'card') === 'card' ? 'checked' : '' }} style="margin-top:0.1rem;">

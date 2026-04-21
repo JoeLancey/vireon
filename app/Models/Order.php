@@ -24,7 +24,6 @@ class Order extends Model {
         'items_count',
         'subtotal',
         'shipping_fee',
-        'coupon_discount',
         'total',
         'placed_at',
         'estimated_arrival',
@@ -32,7 +31,6 @@ class Order extends Model {
         'shipped_at',
         'delivered_at',
         'cancelled_at',
-        'coupon_id',
     ];
 
     protected $casts = [
@@ -53,10 +51,6 @@ class Order extends Model {
 
     public function items() {
         return $this->hasMany(OrderItem::class);
-    }
-
-    public function coupon() {
-        return $this->belongsTo(Coupon::class);
     }
 
     public function getStatusLabelAttribute(): string

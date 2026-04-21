@@ -7,11 +7,9 @@ use App\Http\Controllers\CartController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\WishlistController;
-use App\Http\Controllers\CouponController;
 use App\Http\Controllers\Admin\ProductController as AdminProductController;
 use App\Http\Controllers\Admin\BrandController as AdminBrandController;
 use App\Http\Controllers\Admin\OrderController as AdminOrderController;
-use App\Http\Controllers\Admin\CouponController as AdminCouponController;
 use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\SizeController as AdminSizeController;
 use App\Http\Controllers\Admin\ProductSizeController as AdminProductSizeController;
@@ -20,9 +18,6 @@ use App\Http\Controllers\Admin\ProductSizeController as AdminProductSizeControll
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/products', [ProductController::class, 'index'])->name('products.index');
 Route::get('/products/{product}', [ProductController::class, 'show'])->name('products.show');
-
-// Coupon Validation
-Route::post('/coupons/validate', [CouponController::class, 'validate'])->name('coupons.validate');
 
 // Auth Routes (Breeze)
 require __DIR__.'/auth.php';
@@ -72,7 +67,6 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::delete('/products/{product}/force-destroy', [AdminProductController::class, 'forceDestroy'])->name('products.force-destroy');
     Route::resource('products', AdminProductController::class)->except(['destroy']);
     Route::resource('brands', AdminBrandController::class);
-    Route::resource('coupons', AdminCouponController::class);
     Route::resource('sizes', AdminSizeController::class);
     Route::get('/products/{product}/sizes', [AdminProductSizeController::class, 'manageSizes'])->name('products.manage-sizes');
     Route::patch('/products/{product}/sizes', [AdminProductSizeController::class, 'updateSizes'])->name('products.update-sizes');

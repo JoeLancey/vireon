@@ -83,9 +83,13 @@
                         <label style="color:#fff;display:block;margin-bottom:0.75rem;font-weight:600;font-size:0.95rem;">Select Size *</label>
                         <div style="display:flex;gap:0.5rem;flex-wrap:wrap;">
                             @foreach($product->sizes as $size)
-                                <label style="display:flex;align-items:center;gap:0.4rem;cursor:pointer;padding:0.5rem 0.75rem;background:#141414;border:1px solid var(--border);border-radius:8px;transition:all 0.2s;" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="if(!this.querySelector('input').checked) this.style.borderColor='var(--border)'">
-                                    <input type="radio" name="size_id" value="{{ $size->id }}" style="width:auto;accent-color:var(--accent);" onchange="this.parentElement.style.borderColor='var(--accent)'; this.parentElement.style.background='rgba(200,255,0,0.05)'">
-                                    <span style="color:#aaa;font-size:0.9rem;">{{ $size->name }}</span>
+                                @php
+                                    $sizeStock = (int) ($size->pivot->stock ?? 0);
+                                    $isSizeAvailable = $sizeStock > 0;
+                                @endphp
+                                <label style="display:flex;align-items:center;gap:0.4rem;cursor:{{ $isSizeAvailable ? 'pointer' : 'not-allowed' }};padding:0.5rem 0.75rem;background:{{ $isSizeAvailable ? '#141414' : '#101010' }};border:1px solid {{ $isSizeAvailable ? 'var(--border)' : '#2b2b2b' }};border-radius:8px;transition:all 0.2s;opacity:{{ $isSizeAvailable ? '1' : '0.45' }};" onmouseover="{{ $isSizeAvailable ? "this.style.borderColor='var(--accent)'" : '' }}" onmouseout="{{ $isSizeAvailable ? "if(!this.querySelector('input').checked) this.style.borderColor='var(--border)'" : '' }}">
+                                    <input type="radio" name="size_id" value="{{ $size->id }}" data-stock="{{ $sizeStock }}" {{ $isSizeAvailable ? '' : 'disabled' }} style="width:auto;accent-color:var(--accent);" onchange="onSizeSelected(this)">
+                                    <span style="color:#aaa;font-size:0.9rem;">{{ $size->name }} <span style="color:{{ $isSizeAvailable ? 'var(--muted)' : '#FF6B6B' }};font-size:0.78rem;">({{ $isSizeAvailable ? $sizeStock . ' left' : 'Out of stock' }})</span></span>
                                 </label>
                             @endforeach
                         </div>
@@ -134,6 +138,21 @@
                             }
                         }
                         return true;
+                    }
+
+                    function onSizeSelected(input) {
+                        const quantityInput = document.getElementById('quantity');
+                        if (!quantityInput) {
+                            return;
+                        }
+
+                        const stock = parseInt(input.dataset.stock || '0', 10);
+                        if (stock > 0) {
+                            quantityInput.max = stock;
+                            if (parseInt(quantityInput.value || '1', 10) > stock) {
+                                quantityInput.value = stock;
+                            }
+                        }
                     }
 
                     (function () {
