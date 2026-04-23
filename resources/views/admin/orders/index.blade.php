@@ -12,7 +12,7 @@
         <a href="{{ route('admin.dashboard') }}" class="btn-outline">Back to Dashboard</a>
     </div>
 
-    <div style="display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:0.85rem;margin-bottom:1.4rem;">
+    <div style="display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:0.85rem;margin-bottom:1.4rem;">
         <div class="card" style="padding:1rem;">
             <p style="margin:0;color:var(--muted);font-size:0.72rem;text-transform:uppercase;letter-spacing:0.12em;">Total</p>
             <p class="font-display" style="margin:0.35rem 0 0;color:var(--accent);font-size:2rem;">{{ $stats['total'] }}</p>
@@ -34,6 +34,10 @@
             <p class="font-display" style="margin:0.35rem 0 0;color:#22C55E;font-size:2rem;">{{ $stats['delivered'] }}</p>
         </div>
         <div class="card" style="padding:1rem;">
+            <p style="margin:0;color:var(--muted);font-size:0.72rem;text-transform:uppercase;letter-spacing:0.12em;">Closed</p>
+            <p class="font-display" style="margin:0.35rem 0 0;color:#9CA3AF;font-size:2rem;">{{ $stats['closed'] }}</p>
+        </div>
+        <div class="card" style="padding:1rem;">
             <p style="margin:0;color:var(--muted);font-size:0.72rem;text-transform:uppercase;letter-spacing:0.12em;">Cancelled</p>
             <p class="font-display" style="margin:0.35rem 0 0;color:#FF6B6B;font-size:2rem;">{{ $stats['cancelled'] }}</p>
         </div>
@@ -43,7 +47,7 @@
         <input type="text" name="search" value="{{ request('search') }}" placeholder="Search order, customer, or email" style="flex:1;min-width:240px;">
         <select name="status" style="min-width:180px;">
             <option value="">All Statuses</option>
-            @foreach(['pending','confirmed','processing','shipped','delivered','cancelled'] as $status)
+            @foreach(['pending','confirmed','processing','shipped','delivered','closed','cancelled'] as $status)
             <option value="{{ $status }}" {{ request('status') === $status ? 'selected' : '' }}>{{ ucfirst($status) }}</option>
             @endforeach
         </select>
@@ -78,12 +82,25 @@
                         </div>
                     </td>
                     <td style="padding:1rem;">
-                        <span style="font-size:0.72rem;padding:0.22rem 0.55rem;border-radius:999px;background:{{ $order->status_color }}22;color:{{ $order->status_color }};border:1px solid {{ $order->status_color }}44;text-transform:uppercase;letter-spacing:0.08em;font-weight:700;">{{ $order->status_label }}</span>
+                        <div style="display:flex;align-items:center;gap:0.45rem;flex-wrap:wrap;">
+                            <span style="font-size:0.72rem;padding:0.22rem 0.55rem;border-radius:999px;background:{{ $order->status_color }}22;color:{{ $order->status_color }};border:1px solid {{ $order->status_color }}44;text-transform:uppercase;letter-spacing:0.08em;font-weight:700;">{{ $order->status_label }}</span>
+                        </div>
                     </td>
                     <td style="padding:1rem;color:#fff;font-weight:700;">₱{{ number_format((float) $order->total, 2) }}</td>
                     <td style="padding:1rem;color:#8f8f8f;">{{ $order->placed_at->format('M d, Y h:i A') }}</td>
                     <td style="padding:1rem;text-align:right;">
-                        <a href="{{ route('admin.orders.show', $order) }}" class="btn-outline" style="text-decoration:none;display:inline-block;">Manage</a>
+                        <div style="display:flex;gap:0.5rem;justify-content:flex-end;flex-wrap:wrap;">
+                            @if($order->status === 'delivered')
+                            <form method="POST" action="{{ route('admin.orders.update', $order) }}" style="display:inline;">
+                                @csrf
+                                @method('PATCH')
+                                <input type="hidden" name="status" value="closed">
+                                <input type="hidden" name="tracking_number" value="{{ $order->tracking_number }}">
+                                <button type="submit" class="btn-accent" style="border:none;cursor:pointer;min-width:95px;height:36px;padding:0 1rem;font-size:0.85rem;display:inline-flex;align-items:center;justify-content:center;">Close</button>
+                            </form>
+                            @endif
+                            <a href="{{ route('admin.orders.show', $order) }}" class="btn-outline" style="text-decoration:none;display:inline-flex;align-items:center;justify-content:center;min-width:95px;height:36px;padding:0 1rem;font-size:0.85rem;">Manage</a>
+                        </div>
                     </td>
                 </tr>
                 @empty

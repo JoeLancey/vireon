@@ -34,6 +34,7 @@ class OrderController extends Controller
             'processing' => Order::where('status', 'processing')->count(),
             'shipped' => Order::where('status', 'shipped')->count(),
             'delivered' => Order::where('status', 'delivered')->count(),
+            'closed' => Order::where('status', 'closed')->count(),
             'cancelled' => Order::where('status', 'cancelled')->count(),
         ];
 
@@ -50,7 +51,7 @@ class OrderController extends Controller
     public function update(Request $request, Order $order)
     {
         $validated = $request->validate([
-            'status' => ['required', 'in:pending,confirmed,processing,shipped,delivered,cancelled'],
+            'status' => ['required', 'in:pending,confirmed,processing,shipped,delivered,closed,cancelled'],
             'tracking_number' => ['nullable', 'string', 'max:255'],
         ]);
 
@@ -85,11 +86,11 @@ class OrderController extends Controller
             $updates['delivered_at'] = null;
         }
 
-        if ($validated['status'] !== 'delivered' && $order->delivered_at) {
+        if (! in_array($validated['status'], ['delivered', 'closed'], true) && $order->delivered_at) {
             $updates['delivered_at'] = null;
         }
 
-        if ($validated['status'] !== 'shipped' && $order->shipped_at && $validated['status'] !== 'delivered') {
+        if (! in_array($validated['status'], ['shipped', 'delivered', 'closed'], true) && $order->shipped_at) {
             $updates['shipped_at'] = null;
         }
 

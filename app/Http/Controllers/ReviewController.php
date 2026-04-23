@@ -13,7 +13,6 @@ class ReviewController extends Controller
 
         $validated = $request->validate([
             'rating' => ['required', 'integer', 'min:1', 'max:5'],
-            'title' => ['required', 'string', 'max:255'],
             'comment' => ['required', 'string', 'max:1000'],
         ]);
 
@@ -35,7 +34,7 @@ class ReviewController extends Controller
             'product_id' => $product->id,
             'user_id' => auth()->id(),
             'rating' => $validated['rating'],
-            'title' => $validated['title'],
+            'title' => '',
             'comment' => $validated['comment'],
             'is_verified_purchase' => $isPurchased,
             'is_approved' => false,

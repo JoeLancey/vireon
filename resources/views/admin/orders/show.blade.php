@@ -78,7 +78,7 @@
                 <div>
                     <label style="display:block;margin-bottom:0.35rem;color:var(--muted);font-size:0.78rem;">Status</label>
                     <select name="status">
-                        @foreach(['pending','confirmed','processing','shipped','delivered','cancelled'] as $status)
+                        @foreach(['pending','confirmed','processing','shipped','delivered','closed','cancelled'] as $status)
                         <option value="{{ $status }}" {{ $order->status === $status ? 'selected' : '' }}>{{ ucfirst($status) }}</option>
                         @endforeach
                     </select>

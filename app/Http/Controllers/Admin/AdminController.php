@@ -58,7 +58,15 @@ class AdminController extends Controller
             ->take(10)
             ->get();
 
-        return view('admin.dashboard', compact('stats', 'recentProducts', 'brands', 'products'));
+        $topWishlistedProducts = Product::active()
+            ->with('brand')
+            ->withCount('wishlistUsers')
+            ->orderByDesc('wishlist_users_count')
+            ->orderBy('name')
+            ->take(5)
+            ->get();
+
+        return view('admin.dashboard', compact('stats', 'recentProducts', 'brands', 'products', 'topWishlistedProducts'));
     }
 
 }

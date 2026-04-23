@@ -47,11 +47,11 @@ Route::middleware('auth')->group(function () {
     Route::post('/products/{product}/reviews', [ReviewController::class, 'store'])->name('reviews.store');
     Route::delete('/reviews/{review}', [ReviewController::class, 'destroy'])->name('reviews.destroy');
 
-    // Wishlist Routes
-    Route::get('/wishlist', [WishlistController::class, 'index'])->name('wishlist.index');
+    // Wishlist Routes (add/remove/toggle only, no page view)
     Route::post('/wishlist/add/{product}', [WishlistController::class, 'add'])->name('wishlist.add');
     Route::post('/wishlist/remove/{product}', [WishlistController::class, 'remove'])->name('wishlist.remove');
     Route::post('/wishlist/toggle/{product}', [WishlistController::class, 'toggle'])->name('wishlist.toggle');
+
 });
 
 // Admin Only Routes

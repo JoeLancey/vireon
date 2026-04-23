@@ -60,6 +60,7 @@ class Order extends Model {
             'processing' => 'Processing',
             'shipped' => 'Shipped',
             'delivered' => 'Delivered',
+            'closed' => 'Finished',
             'cancelled' => 'Cancelled',
             default => 'Pending',
         };
@@ -72,6 +73,7 @@ class Order extends Model {
             'processing' => '#38BDF8',
             'shipped' => '#FBBF24',
             'delivered' => '#22C55E',
+            'closed' => '#22C55E',
             'cancelled' => '#FF6B6B',
             default => '#C8FF00',
         };

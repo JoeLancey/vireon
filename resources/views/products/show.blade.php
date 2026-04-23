@@ -108,15 +108,9 @@
                         </button>
 
                         @php
-                            $inWishlist = auth()->user()->wishedProducts()->where('product_id', $product->id)->exists() ?? false;
+                            $inWishlist = auth()->check() ? auth()->user()->wishedProducts()->where('product_id', $product->id)->exists() : false;
                         @endphp
-                        <button id="wishlist-toggle"
-                                type="button"
-                                data-toggle-url="{{ route('wishlist.toggle', $product) }}"
-                                data-in-wishlist="{{ $inWishlist ? '1' : '0' }}"
-                                data-skip-size-validation="1"
-                                class="btn-outline"
-                                style="border:none;cursor:pointer;font-size:1rem;padding:0.875rem 1.5rem;{{ $inWishlist ? 'background:rgba(200,255,0,0.1);border-color:var(--accent);color:var(--accent);' : '' }}">
+                        <button id="wishlist-toggle" type="button" class="btn-outline" data-toggle-url="{{ route('wishlist.toggle', $product) }}" data-in-wishlist="{{ $inWishlist ? '1' : '0' }}" style="padding:0.875rem 1.5rem;cursor:pointer;border:none;{{ $inWishlist ? 'background:rgba(255,107,107,0.15);color:#FF6B6B;' : '' }}">
                             {{ $inWishlist ? '❤ Wishlisted' : '🤍 Wishlist' }}
                         </button>
                     </div>
@@ -158,62 +152,70 @@
                     (function () {
                         const button = document.getElementById('wishlist-toggle');
                         if (!button) {
+                            console.log('Wishlist button not found');
                             return;
                         }
 
                         const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
-                        const activeStyle = 'background:rgba(200,255,0,0.1);border-color:var(--accent);color:var(--accent);';
-                        const defaultStyle = 'background:transparent;border-color:var(--border);color:#fff;';
+                        if (!csrfToken) {
+                            console.error('CSRF token not found');
+                            button.disabled = true;
+                            return;
+                        }
 
                         function setButtonState(isWishlisted) {
                             button.dataset.inWishlist = isWishlisted ? '1' : '0';
                             button.textContent = isWishlisted ? '❤ Wishlisted' : '🤍 Wishlist';
                             if (isWishlisted) {
-                                button.style.background = 'rgba(200,255,0,0.1)';
-                                button.style.borderColor = 'var(--accent)';
-                                button.style.color = 'var(--accent)';
+                                button.style.background = 'rgba(255,107,107,0.15)';
+                                button.style.border = 'none';
+                                button.style.color = '#FF6B6B';
                             } else {
                                 button.style.background = 'transparent';
-                                button.style.borderColor = 'var(--border)';
+                                button.style.border = 'none';
                                 button.style.color = '#fff';
                             }
                         }
 
-                        button.addEventListener('click', async function () {
-                            if (!csrfToken) {
+                        button.addEventListener('click', async function (e) {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            
+                            const url = button.dataset.toggleUrl;
+                            if (!url) {
+                                alert('Wishlist URL not set');
                                 return;
                             }
 
-                            const previousText = button.textContent;
                             const previousState = button.dataset.inWishlist === '1';
                             button.disabled = true;
-                            button.textContent = 'Updating...';
 
                             try {
-                                const response = await fetch(button.dataset.toggleUrl, {
+                                const response = await fetch(url, {
                                     method: 'POST',
                                     headers: {
                                         'X-CSRF-TOKEN': csrfToken,
                                         'Accept': 'application/json',
-                                        'X-Requested-With': 'XMLHttpRequest',
+                                        'Content-Type': 'application/json',
                                     },
                                 });
 
                                 if (!response.ok) {
-                                    throw new Error('Wishlist request failed');
+                                    throw new Error('HTTP ' + response.status);
                                 }
 
                                 const data = await response.json();
                                 setButtonState(data.status === 'added');
                             } catch (error) {
+                                console.error('Wishlist error:', error);
                                 setButtonState(previousState);
-                                button.textContent = previousText;
-                                alert('Could not update wishlist right now. Please try again.');
+                                alert('Could not update wishlist. Please try again.');
                             } finally {
                                 button.disabled = false;
                             }
                         });
                     })();
+
                 </script>
                 @else
                 <a href="{{ route('admin.products.edit', $product) }}" class="btn-accent" style="display:block;text-align:center;padding:0.875rem;">Edit Product</a>
@@ -290,12 +292,6 @@
                                     </div>
                                 </div>
 
-                                {{-- Review Title --}}
-                                <div>
-                                    <label for="review_title" style="color:#fff;display:block;margin-bottom:0.5rem;font-weight:600;font-size:0.9rem;">Review Title *</label>
-                                    <input id="review_title" type="text" name="title" placeholder="e.g., Great quality and fit!" value="{{ old('title') }}" style="width:100%;" required>
-                                </div>
-
                                 {{-- Review Comment --}}
                                 <div>
                                     <label for="review_comment" style="color:#fff;display:block;margin-bottom:0.5rem;font-weight:600;font-size:0.9rem;">Your Review *</label>
@@ -369,7 +365,6 @@
                                 @for($i = 0; $i < $review->rating; $i++)★@endfor
                             </div>
                         </div>
-                        <p style="color:#fff;font-weight:600;margin:0.5rem 0 0.75rem;font-size:1rem;">{{ $review->title }}</p>
                         <p style="color:#aaa;margin:0;line-height:1.6;">{{ $review->comment }}</p>
                     </div>
                 @endforeach

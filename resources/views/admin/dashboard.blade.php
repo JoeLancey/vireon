@@ -57,6 +57,32 @@
         <a href="{{ route('admin.products.archived') }}" class="btn-outline">View Archived Products</a>
     </div>
 
+    <div class="card" style="padding:1.5rem;margin-bottom:2rem;">
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;margin-bottom:1rem;">
+            <h2 class="font-display" style="font-size:1.4rem;color:#fff;margin:0;">TOP 5 WISHLISTED PRODUCTS</h2>
+            <span style="color:var(--muted);font-size:0.85rem;">Based on total wishlist adds</span>
+        </div>
+
+        @if($topWishlistedProducts->count())
+            <div style="display:grid;gap:0.65rem;">
+                @foreach($topWishlistedProducts as $rank => $wishlistedProduct)
+                    <div style="display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:0.75rem 0.9rem;background:#141414;border:1px solid var(--border);border-radius:8px;">
+                        <div style="display:flex;align-items:center;gap:0.85rem;min-width:0;">
+                            <span style="color:var(--accent);font-weight:700;width:1.5rem;flex:0 0 1.5rem;">#{{ $rank + 1 }}</span>
+                            <div style="min-width:0;">
+                                <p style="color:#fff;margin:0;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ $wishlistedProduct->name }}</p>
+                                <p style="color:var(--muted);margin:0.2rem 0 0;font-size:0.8rem;">{{ $wishlistedProduct->brand->name }}</p>
+                            </div>
+                        </div>
+                        <span style="color:var(--accent);font-weight:700;white-space:nowrap;">{{ $wishlistedProduct->wishlist_users_count }} saves</span>
+                    </div>
+                @endforeach
+            </div>
+        @else
+            <p style="color:var(--muted);margin:0;">No wishlist data available yet.</p>
+        @endif
+    </div>
+
     <div style="margin-bottom:2.5rem;">
         <div style="display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:2rem;flex-wrap:wrap;gap:1rem;">
             <div>
