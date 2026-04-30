@@ -75,7 +75,7 @@
                     </a>
 
                     <div style="min-width:0;">
-                        <p style="color:var(--muted);font-size:0.78rem;margin:0 0 0.35rem;text-transform:uppercase;letter-spacing:0.08em;">{{ $item->product->brand->name }} • {{ ucfirst($item->product->category) }}</p>
+                        <p style="color:var(--muted);font-size:0.78rem;margin:0 0 0.35rem;text-transform:uppercase;letter-spacing:0.08em;">{{ $item->product->brand?->name ?? 'Brand' }} • {{ ucfirst($item->product->category) }}</p>
                         <a href="{{ route('products.show', $item->product) }}" style="color:#fff;text-decoration:none;font-size:1.15rem;font-weight:600;line-height:1.2;">{{ $item->product->name }}</a>
                         @if($item->size)
                             <p style="color:#aaa;font-size:0.85rem;margin:0.35rem 0 0;">Size: <span style="color:#fff;font-weight:600;">{{ $item->size->name }}</span></p>
@@ -90,6 +90,7 @@
                         <form method="POST" action="{{ route('cart.update', $item->product) }}" style="display:flex;align-items:flex-end;gap:0.5rem;flex-wrap:wrap;justify-content:flex-end;">
                             @csrf
                             @method('PATCH')
+                            <input type="hidden" name="cart_item_id" value="{{ $item->id }}">
                             <div style="min-width:88px;">
                                 <label for="qty-{{ $item->id }}" style="margin-bottom:0.35rem;color:var(--muted);font-size:0.72rem;display:block;">Qty</label>
                                 <input id="qty-{{ $item->id }}" type="number" name="quantity" min="1" max="{{ max($item->product->stock, 1) }}" value="{{ $item->quantity }}" style="width:88px;">
@@ -100,6 +101,7 @@
                         <form method="POST" action="{{ route('cart.destroy', $item->product) }}">
                             @csrf
                             @method('DELETE')
+                            <input type="hidden" name="cart_item_id" value="{{ $item->id }}">
                             <button type="submit" class="btn-outline" style="background:none;cursor:pointer;color:#FF6B6B;border-color:#FF6B6B44;">Remove</button>
                         </form>
 

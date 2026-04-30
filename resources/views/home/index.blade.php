@@ -364,7 +364,7 @@
     function goToSlide(index) {
         currentSlide = index;
         updateSlide();
-        clearTimeout(slideTimer);
+        clearInterval(slideTimer);
         startAutoSlide();
     }
 
@@ -374,6 +374,7 @@
     }
 
     function startAutoSlide() {
+        clearInterval(slideTimer);
         slideTimer = setInterval(() => {
             nextSlide();
         }, autoSlideInterval);
@@ -386,7 +387,7 @@
     }
 
     // Pause on hover
-    document.getElementById('heroSlider')?.addEventListener('mouseenter', () => clearTimeout(slideTimer));
+    document.getElementById('heroSlider')?.addEventListener('mouseenter', () => clearInterval(slideTimer));
     document.getElementById('heroSlider')?.addEventListener('mouseleave', () => startAutoSlide());
 </script>
 

@@ -52,9 +52,13 @@
 
         {{-- Details --}}
         <div>
+            @php
+                $brandAccent = $product->brand?->accent_color ?? '#C8FF00';
+                $brandName = $product->brand?->name ?? 'VIREON';
+            @endphp
             <div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:0.75rem;flex-wrap:wrap;">
-                <span style="background:{{ $product->brand->accent_color }}22;color:{{ $product->brand->accent_color }};border:1px solid {{ $product->brand->accent_color }}44;padding:0.25rem 0.75rem;border-radius:4px;font-size:0.8rem;font-weight:700;text-transform:uppercase;">
-                    {{ $product->brand->name }}
+                <span style="background:{{ $brandAccent }}22;color:{{ $brandAccent }};border:1px solid {{ $brandAccent }}44;padding:0.25rem 0.75rem;border-radius:4px;font-size:0.8rem;font-weight:700;text-transform:uppercase;">
+                    {{ $brandName }}
                 </span>
                 <span style="color:var(--muted);font-size:0.8rem;text-transform:capitalize;">{{ $product->category }}</span>
                 @if($product->is_featured)
@@ -229,7 +233,7 @@
     {{-- Related Products --}}
     @if($related->count())
     <div style="margin-top:4rem;">
-        <h2 class="font-display" style="font-size:1.75rem;color:#fff;margin-bottom:1.5rem;">MORE FROM {{ strtoupper($product->brand->name) }}</h2>
+        <h2 class="font-display" style="font-size:1.75rem;color:#fff;margin-bottom:1.5rem;">MORE FROM {{ strtoupper($brandName) }}</h2>
         <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:1rem;">
             @foreach($related as $rel)
             <a href="{{ route('products.show', $rel) }}" style="text-decoration:none;">
@@ -260,16 +264,7 @@
 
         @auth
             @if(!auth()->user()->isAdmin())
-                @php
-                    $hasOrdered = auth()->user()->orders()
-                        ->whereHas('items', fn($query) => $query->where('product_id', $product->id))
-                        ->exists();
-                    $hasReviewed = auth()->user()->reviews()
-                        ->where('product_id', $product->id)
-                        ->exists();
-                @endphp
-
-                @if($hasOrdered)
+                @if($canReview)
                     @if(!$hasReviewed)
                         <div style="margin-bottom:2rem;padding:1.5rem;background:#141414;border-radius:12px;border:1px solid var(--border);">
                             <h3 style="color:#fff;margin-bottom:1rem;font-size:1.1rem;">✓ Share Your Experience</h3>
@@ -343,10 +338,6 @@
         @endauth
 
         {{-- Display Reviews --}}
-        @php
-            $reviews = $product->reviews()->where('is_approved', true)->latest()->get();
-        @endphp
-
         @if($reviews->count() > 0)
             <div style="display:grid;gap:1rem;">
                 @foreach($reviews as $review)
@@ -354,7 +345,7 @@
                         <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:0.75rem;flex-wrap:wrap;gap:0.5rem;">
                             <div>
                                 <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.25rem;">
-                                    <p style="color:var(--accent);font-weight:600;margin:0;font-size:0.95rem;">{{ $review->user->name }}</p>
+                                    <p style="color:var(--accent);font-weight:600;margin:0;font-size:0.95rem;">{{ $review->user?->name ?? 'Customer' }}</p>
                                     @if($review->is_verified_purchase)
                                         <span style="color:#4ADE80;font-size:0.8rem;font-weight:600;">✓ VERIFIED</span>
                                     @endif

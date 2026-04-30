@@ -6,6 +6,7 @@ use App\Models\Order;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Throwable;
 
 class CartController extends Controller {
     protected function ensureCustomerAccess(): void {
@@ -63,7 +64,7 @@ class CartController extends Controller {
         // If product has sizes, size_id is required
         $sizeId = $validated['size_id'] ?? null;
 
-        if ($product->sizes->count() > 0 && ! $sizeId) {
+        if ($product->sizes()->exists() && ! $sizeId) {
             return redirect()->route('products.show', $product)->with('error', 'Please select a size.');
         }
 
@@ -118,7 +119,18 @@ class CartController extends Controller {
         $this->ensureCustomerAccess();
 
         $cart = $this->getCart();
-        $item = $cart->items()->where('product_id', $product->id)->firstOrFail();
+        $validated = $request->validate([
+            'quantity' => ['required', 'integer', 'min:1'],
+            'cart_item_id' => ['nullable', 'integer'],
+        ]);
+
+        $itemQuery = $cart->items()->where('product_id', $product->id);
+
+        if (! empty($validated['cart_item_id'])) {
+            $itemQuery->whereKey($validated['cart_item_id']);
+        }
+
+        $item = $itemQuery->firstOrFail();
 
         if ($this->productIsArchived($product)) {
             $item->delete();
@@ -126,12 +138,17 @@ class CartController extends Controller {
             return redirect()->route('cart.index')->with('error', 'That product is no longer available and was removed from your cart.');
         }
 
-        $validated = $request->validate([
-            'quantity' => ['required', 'integer', 'min:1'],
-        ]);
-
         if ($validated['quantity'] > $product->stock) {
             return redirect()->route('cart.index')->with('error', 'Requested quantity exceeds available stock.');
+        }
+
+        if ($item->size_id) {
+            $size = $product->sizes()->where('sizes.id', $item->size_id)->first();
+            $sizeStock = (int) ($size?->pivot?->stock ?? 0);
+
+            if (! $size || $validated['quantity'] > $sizeStock) {
+                return redirect()->route('cart.index')->with('error', 'Requested quantity exceeds available stock for that size.');
+            }
         }
 
         $item->update([
@@ -145,8 +162,19 @@ class CartController extends Controller {
     public function destroy(Product $product) {
         $this->ensureCustomerAccess();
 
+        $validated = request()->validate([
+            'cart_item_id' => ['nullable', 'integer'],
+        ]);
+
         $cart = $this->getCart();
-        $cart->items()->where('product_id', $product->id)->delete();
+
+        $itemQuery = $cart->items()->where('product_id', $product->id);
+
+        if (! empty($validated['cart_item_id'])) {
+            $itemQuery->whereKey($validated['cart_item_id']);
+        }
+
+        $itemQuery->delete();
 
         return redirect()->route('cart.index')->with('success', 'Item removed from cart.');
     }
@@ -228,68 +256,82 @@ class CartController extends Controller {
             'gcash' => 'GCash',
         ];
 
-        $order = DB::transaction(function () use ($cart, $validated, $orderNumber, $placedAt, $estimatedArrival, $subtotal, $shippingFee, $total) {
-            $order = Order::create([
-                'user_id' => auth()->id(),
-                'order_number' => $orderNumber,
-            'status' => 'pending',
-            'recipient_name' => $validated['recipient_name'],
-            'phone' => $validated['phone'],
-            'address_line1' => $validated['address_line1'],
-            'address_line2' => $validated['address_line2'] ?? null,
-            'city' => $validated['city'],
-            'province' => $validated['province'],
-            'postal_code' => $validated['postal_code'],
-            'country' => $validated['country'],
-                'delivery_window' => $validated['delivery_window'],
-                'payment_method' => $validated['payment_method'],
-                'items_count' => (int) $cart->items->sum('quantity'),
-                'subtotal' => $subtotal,
-                'shipping_fee' => $shippingFee,
-                'total' => $total,
-                'placed_at' => $placedAt,
-                'estimated_arrival' => $estimatedArrival,
-            ]);
+        try {
+            $order = DB::transaction(function () use ($cart, $validated, $orderNumber, $placedAt, $estimatedArrival, $subtotal, $shippingFee, $total) {
+                $order = Order::create([
+                    'user_id' => auth()->id(),
+                    'order_number' => $orderNumber,
+                    'status' => 'pending',
+                    'recipient_name' => $validated['recipient_name'],
+                    'phone' => $validated['phone'],
+                    'address_line1' => $validated['address_line1'],
+                    'address_line2' => $validated['address_line2'] ?? null,
+                    'city' => $validated['city'],
+                    'province' => $validated['province'],
+                    'postal_code' => $validated['postal_code'],
+                    'country' => $validated['country'],
+                    'delivery_window' => $validated['delivery_window'],
+                    'payment_method' => $validated['payment_method'],
+                    'items_count' => (int) $cart->items->sum('quantity'),
+                    'subtotal' => $subtotal,
+                    'shipping_fee' => $shippingFee,
+                    'total' => $total,
+                    'placed_at' => $placedAt,
+                    'estimated_arrival' => $estimatedArrival,
+                ]);
 
-            foreach ($cart->items as $item) {
-                $product = Product::lockForUpdate()->find($item->product_id);
+                foreach ($cart->items as $item) {
+                    $product = Product::lockForUpdate()->find($item->product_id);
 
-                if (! $product || $this->productIsArchived($product) || $item->quantity > $product->stock) {
-                    abort(409, 'Checkout failed due to stock changes.');
-                }
-
-                if ($item->size_id) {
-                    $size = $product->sizes()->where('sizes.id', $item->size_id)->first();
-                    $sizeStock = (int) ($size?->pivot?->stock ?? 0);
-
-                    if (! $size || $item->quantity > $sizeStock) {
-                        abort(409, 'Checkout failed due to size stock changes.');
+                    if (! $product || $this->productIsArchived($product) || $item->quantity > $product->stock) {
+                        throw new \RuntimeException('Checkout failed due to stock changes.');
                     }
 
-                    DB::table('product_size')
-                        ->where('product_id', $product->id)
-                        ->where('size_id', $item->size_id)
-                        ->decrement('stock', $item->quantity);
+                    if ($item->size_id) {
+                        $sizeStockRow = DB::table('product_size')
+                            ->where('product_id', $product->id)
+                            ->where('size_id', $item->size_id)
+                            ->lockForUpdate()
+                            ->first(['stock']);
+
+                        $sizeStock = (int) ($sizeStockRow->stock ?? 0);
+
+                        if (! $sizeStockRow || $item->quantity > $sizeStock) {
+                            throw new \RuntimeException('Checkout failed due to size stock changes.');
+                        }
+
+                        DB::table('product_size')
+                            ->where('product_id', $product->id)
+                            ->where('size_id', $item->size_id)
+                            ->decrement('stock', $item->quantity);
+                    }
+
+                    $product->decrement('stock', $item->quantity);
+
+                    $order->items()->create([
+                        'product_id' => $item->product_id,
+                        'product_name' => $item->product->name,
+                        'brand_name' => $item->product->brand?->name,
+                        'category' => $item->product->category,
+                        'quantity' => (int) $item->quantity,
+                        'unit_price' => (float) $item->price,
+                        'subtotal' => (float) ($item->quantity * $item->price),
+                        'product_image' => $item->product->image,
+                        'size_id' => $item->size_id,
+                    ]);
                 }
 
-                $product->decrement('stock', $item->quantity);
+                $cart->items()->delete();
 
-                $order->items()->create([
-                    'product_id' => $item->product_id,
-                    'product_name' => $item->product->name,
-                    'brand_name' => $item->product->brand?->name,
-                    'category' => $item->product->category,
-                    'quantity' => (int) $item->quantity,
-                    'unit_price' => (float) $item->price,
-                    'subtotal' => (float) ($item->quantity * $item->price),
-                    'product_image' => $item->product->image,
-                    'size_id' => $item->size_id,
-                ]);
-            }
+                return $order->load('items');
+            });
+        } catch (Throwable $exception) {
+            report($exception);
 
-            $cart->items()->delete();
-            return $order->load('items');
-        });
+            return redirect()
+                ->route('cart.index')
+                ->with('error', 'Checkout could not be completed because stock changed while processing your order. Please review your cart and try again.');
+        }
 
         $confirmationData = [
             'order_id' => $order->id,

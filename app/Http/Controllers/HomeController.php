@@ -6,13 +6,34 @@ use App\Models\Product;
 
 class HomeController extends Controller {
     public function index() {
-        $brands      = Brand::withCount(['products' => fn ($query) => $query->available()])->get();
-        $featured    = Product::available()->with('brand')->where('is_featured', true)->take(6)->get();
-        $allProducts = Product::available()->with('brand')->latest()->limit(12)->get();
-        $stats       = [
-            'total_products' => Product::available()->count(),
-            'in_stock'       => Product::available()->where('stock', '>', 0)->count(),
-            'out_of_stock'   => Product::available()->where('stock', 0)->count(),
+        $brands = Brand::select(['id', 'name', 'slug', 'logo', 'accent_color'])
+            ->withCount(['products' => fn ($query) => $query->available()])
+            ->get();
+
+        $featured = Product::available()
+            ->select(['id', 'brand_id', 'name', 'price', 'image', 'stock'])
+            ->with('brand:id,name')
+            ->where('is_featured', true)
+            ->take(6)
+            ->get();
+
+        $allProducts = Product::available()
+            ->select(['id', 'brand_id', 'name', 'price', 'image', 'stock'])
+            ->with('brand:id,name')
+            ->latest()
+            ->limit(12)
+            ->get();
+
+        $productStats = Product::available()
+            ->selectRaw('COUNT(*) as total_products')
+            ->selectRaw('SUM(CASE WHEN stock > 0 THEN 1 ELSE 0 END) as in_stock')
+            ->selectRaw('SUM(CASE WHEN stock = 0 THEN 1 ELSE 0 END) as out_of_stock')
+            ->first();
+
+        $stats = [
+            'total_products' => (int) ($productStats->total_products ?? 0),
+            'in_stock'       => (int) ($productStats->in_stock ?? 0),
+            'out_of_stock'   => (int) ($productStats->out_of_stock ?? 0),
             'total_brands'   => Brand::count(),
         ];
 
@@ -20,7 +41,7 @@ class HomeController extends Controller {
         $heroData = $featured->take(4)->map(fn($p) => [
             'name'  => strtoupper($p->name),
             'price' => '₱' . number_format($p->price, 2),
-            'brand' => strtoupper($p->brand->name),
+            'brand' => strtoupper($p->brand?->name ?? 'VIREON'),
             'url'   => route('products.show', $p),
         ])->values();
 
