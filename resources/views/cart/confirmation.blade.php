@@ -2,10 +2,10 @@
 @section('title', 'Order Confirmation')
 
 @section('content')
-<div style="max-width:1160px;margin:2rem auto;padding:0 1.5rem 3rem;">
-    <div style="margin-bottom:1.4rem;padding:1rem;border:1px solid var(--border);border-radius:14px;background:linear-gradient(180deg,#141414,#101010);">
+<div class="page-container cart-confirmation-page" style="max-width:1160px;margin:2rem auto;padding:0 1.5rem 3rem;">
+    <div class="cart-step-panel" style="margin-bottom:1.4rem;padding:1rem;border:1px solid var(--border);border-radius:14px;background:linear-gradient(180deg,#141414,#101010);">
         <p style="color:#666;font-size:0.72rem;text-transform:uppercase;letter-spacing:0.18em;margin:0 0 0.8rem;">Checkout Flow</p>
-        <div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0.7rem;">
+        <div class="cart-step-grid" style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0.7rem;">
             <div style="padding:0.65rem 0.7rem;border-radius:10px;border:1px solid var(--border);background:#121212;">
                 <p style="margin:0;color:#666;font-size:0.7rem;letter-spacing:0.14em;text-transform:uppercase;">Step 1</p>
                 <p style="margin:0.2rem 0 0;color:#b5b5b5;font-weight:600;font-size:0.88rem;">Bag</p>
@@ -25,13 +25,13 @@
         </div>
     </div>
 
-    <div style="display:grid;grid-template-columns:minmax(0,1fr) 350px;gap:1.5rem;align-items:start;">
+    <div class="cart-confirmation-layout" style="display:grid;grid-template-columns:minmax(0,1fr) 350px;gap:1.5rem;align-items:start;">
         <section class="card" style="padding:1.5rem;border-radius:20px;">
             <p style="margin:0;color:var(--accent);font-size:0.74rem;letter-spacing:0.2em;text-transform:uppercase;font-weight:700;">Order Confirmed</p>
             <h1 class="font-display" style="margin:0.5rem 0 0.65rem;color:#fff;font-size:clamp(2rem,4.8vw,3.3rem);line-height:0.95;">THANK YOU, YOUR ORDER IS IN</h1>
             <p style="margin:0;color:#9a9a9a;line-height:1.7;max-width:46rem;">Your checkout was successful and stock is already reserved. We will keep you updated as soon as your order is prepared for delivery.</p>
 
-            <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0.9rem;margin-top:1.2rem;">
+            <div class="confirmation-metrics" style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0.9rem;margin-top:1.2rem;">
                 <div style="padding:0.9rem;border-radius:12px;background:#121212;border:1px solid var(--border);">
                     <p style="margin:0;color:#6e6e6e;font-size:0.74rem;letter-spacing:0.12em;text-transform:uppercase;">Order Number</p>
                     <p style="margin:0.45rem 0 0;color:#fff;font-weight:700;">{{ $confirmation['order_number'] }}</p>
@@ -67,7 +67,7 @@
 
             <div style="margin-top:1.3rem;display:grid;gap:0.75rem;">
                 @foreach($confirmation['items'] as $item)
-                <div style="display:grid;grid-template-columns:64px minmax(0,1fr) auto;gap:0.8rem;align-items:center;padding:0.75rem;border-radius:12px;border:1px solid var(--border);background:#111;">
+                <div class="confirmation-item" style="display:grid;grid-template-columns:64px minmax(0,1fr) auto;gap:0.8rem;align-items:center;padding:0.75rem;border-radius:12px;border:1px solid var(--border);background:#111;">
                     <div style="width:64px;height:64px;border-radius:10px;overflow:hidden;background:#1A1A1A;">
                         @if($item['image'])
                             <img src="{{ Storage::url($item['image']) }}" alt="{{ $item['name'] }}" style="width:100%;height:100%;object-fit:cover;">
@@ -85,7 +85,7 @@
             </div>
         </section>
 
-        <aside class="card" style="padding:1.35rem;border-radius:18px;position:sticky;top:88px;">
+        <aside class="card confirmation-summary" style="padding:1.35rem;border-radius:18px;position:sticky;top:88px;">
             <p style="margin:0 0 0.8rem;color:var(--accent);font-size:0.72rem;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;">Summary</p>
             <div style="display:grid;gap:0.75rem;">
                 <div style="display:flex;justify-content:space-between;color:#aaa;">

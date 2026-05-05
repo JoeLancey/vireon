@@ -2,8 +2,8 @@
 @section('title', 'My Orders')
 
 @section('content')
-<div style="max-width:1160px;margin:2rem auto;padding:0 1.5rem 3rem;">
-    <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:1rem;flex-wrap:wrap;margin-bottom:1.5rem;">
+<div class="page-container order-index-page" style="max-width:1160px;margin:2rem auto;padding:0 1.5rem 3rem;">
+    <div class="orders-header" style="display:flex;align-items:flex-end;justify-content:space-between;gap:1rem;flex-wrap:wrap;margin-bottom:1.5rem;">
         <div>
             <p style="color:var(--muted);font-size:0.82rem;letter-spacing:0.08em;text-transform:uppercase;margin:0 0 0.45rem;">Account</p>
             <h1 class="font-display" style="font-size:clamp(2.3rem,5vw,3.8rem);color:#fff;line-height:0.95;margin:0;">MY ORDERS</h1>
@@ -19,9 +19,9 @@
             <a href="{{ route('products.index') }}" class="btn-accent">Start Shopping</a>
         </div>
     @else
-        <div style="display:grid;gap:0.95rem;">
+        <div class="orders-list" style="display:grid;gap:0.95rem;">
             @foreach($orders as $order)
-            <a href="{{ route('orders.show', $order) }}" class="card" style="text-decoration:none;padding:1rem 1.2rem;border-radius:14px;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:1rem;align-items:center;">
+            <a href="{{ route('orders.show', $order) }}" class="card orders-list-item" style="text-decoration:none;padding:1rem 1.2rem;border-radius:14px;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:1rem;align-items:center;">
                 <div>
                     <div style="display:flex;align-items:center;gap:0.7rem;flex-wrap:wrap;">
                         <span style="font-size:0.75rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--accent);font-weight:700;">{{ $order->order_number }}</span>

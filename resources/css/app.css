@@ -1025,4 +1025,424 @@
             align-items: flex-start;
         }
     }
+
+    @media (max-width: 1024px) {
+        .site-nav-inner {
+            height: auto !important;
+            padding-top: 0.9rem !important;
+            padding-bottom: 0.9rem !important;
+            gap: 0.9rem;
+            flex-wrap: wrap;
+            justify-content: center !important;
+        }
+
+        .site-nav-links,
+        .site-nav-actions {
+            width: 100%;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .products-index-header,
+        .cart-header,
+        .admin-archived-header,
+        .admin-orders-header,
+        .admin-brands-header {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .products-index-layout,
+        .product-show-layout,
+        .cart-layout,
+        .cart-confirmation-layout,
+        .admin-product-form-grid,
+        .admin-dashboard-products-layout,
+        .admin-archived-layout,
+        .admin-orders-show-layout,
+        .admin-orders-stats,
+        .admin-size-row,
+        .admin-order-info-grid,
+        .admin-orders-table-wrap,
+        .admin-brands-table-wrap,
+        .orders-detail-layout {
+            grid-template-columns: 1fr !important;
+        }
+
+        .admin-orders-stats {
+            grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+        }
+
+        .admin-orders-table-wrap,
+        .admin-brands-table-wrap,
+        .admin-sizes-table-wrap {
+            overflow-x: auto !important;
+        }
+
+        .admin-orders-table,
+        .admin-brands-table,
+        .admin-sizes-table {
+            min-width: 900px;
+        }
+
+        .admin-orders-filters {
+            display: grid !important;
+            grid-template-columns: 1fr auto auto !important;
+        }
+
+        .admin-orders-filters input,
+        .admin-orders-filters select {
+            min-width: 0 !important;
+            width: 100% !important;
+        }
+
+        .admin-order-sidebar {
+            position: static !important;
+            top: auto !important;
+        }
+
+        .admin-orders-show-layout {
+            gap: 1rem;
+        }
+
+        .admin-order-item {
+            grid-template-columns: 64px minmax(0, 1fr) !important;
+        }
+
+        .admin-order-item > p:last-child {
+            grid-column: 1 / -1;
+            text-align: left;
+            margin-top: 0.1rem;
+        }
+
+        .admin-sizes-header {
+            gap: 1rem;
+        }
+
+        .admin-dashboard-tabs {
+            overflow-x: auto;
+        }
+
+        .admin-dashboard-search {
+            display: grid !important;
+            grid-template-columns: 1fr auto !important;
+        }
+
+        .admin-dashboard-search input {
+            min-width: 0 !important;
+            width: 100% !important;
+        }
+
+        .orders-list-item {
+            grid-template-columns: minmax(0, 1fr) auto !important;
+        }
+
+        .admin-orders-table,
+        .admin-brands-table,
+        .admin-sizes-table {
+            min-width: 720px;
+        }
+
+        .admin-orders-filters {
+            grid-template-columns: 1fr !important;
+        }
+
+        .admin-orders-filters button,
+        .admin-orders-filters input,
+        .admin-orders-filters select {
+            width: 100% !important;
+        }
+
+        .admin-orders-stats {
+            grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+        }
+
+        .admin-brands-header,
+        .admin-orders-header {
+            gap: 1rem;
+        }
+
+        .admin-sizes-header {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .orders-detail-layout {
+            gap: 1rem;
+        }
+
+        .order-metrics {
+            grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+        }
+
+        .order-item {
+            grid-template-columns: 64px minmax(0, 1fr) !important;
+        }
+
+        .order-item > p:last-child {
+            grid-column: 1 / -1;
+            text-align: left;
+            margin-top: 0.1rem;
+        }
+
+        .order-summary-card {
+            position: static !important;
+            top: auto !important;
+        }
+
+        .product-show-gallery {
+            flex-direction: column;
+        }
+
+        .product-show-main {
+            height: clamp(280px, 62vw, 420px) !important;
+        }
+
+        .product-show-thumbs {
+            flex-direction: row;
+            flex-wrap: wrap;
+        }
+
+        .product-show-actions {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .product-show-actions > * {
+            width: 100%;
+        }
+
+        .cart-step-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+        }
+
+        .cart-summary,
+        .confirmation-summary {
+            position: static !important;
+            top: auto !important;
+        }
+
+        .cart-item {
+            grid-template-columns: 110px minmax(0, 1fr) !important;
+        }
+
+        .cart-item-actions {
+            grid-column: 1 / -1;
+            min-width: 0 !important;
+            justify-items: stretch;
+        }
+
+        .cart-item-actions form,
+        .cart-item-actions button,
+        .cart-item-actions .btn-outline {
+            width: 100%;
+        }
+
+        .confirmation-metrics {
+            grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+        }
+
+        .confirmation-item {
+            grid-template-columns: 64px minmax(0, 1fr) !important;
+        }
+
+        .confirmation-item > p {
+            grid-column: 1 / -1;
+            text-align: left;
+            margin-top: 0.1rem;
+        }
+
+        .admin-product-form-actions {
+            flex-wrap: wrap;
+        }
+
+        .admin-product-form-actions > * {
+            width: 100%;
+        }
+
+        .admin-archived-table-wrap {
+            overflow-x: auto !important;
+        }
+
+        .admin-archived-table-wrap table {
+            min-width: 860px;
+        }
+    }
+
+    @media (max-width: 640px) {
+        .page-container {
+            padding-left: 1rem !important;
+            padding-right: 1rem !important;
+        }
+
+        .products-index-page,
+        .product-show-page,
+        .cart-page,
+        .cart-confirmation-page,
+        .admin-product-form-page,
+        .admin-sizes-page,
+        .admin-archived-page {
+            padding-top: 1.25rem !important;
+            padding-bottom: 1.5rem !important;
+        }
+
+        .products-index-form,
+        .admin-archived-search {
+            display: grid !important;
+            grid-template-columns: 1fr !important;
+        }
+
+        .products-index-form input,
+        .admin-archived-search input {
+            min-width: 0 !important;
+            width: 100% !important;
+        }
+
+        .cart-step-grid,
+        .confirmation-metrics,
+        .order-metrics,
+        .admin-orders-stats {
+            grid-template-columns: 1fr !important;
+        }
+
+        .cart-item,
+        .confirmation-item,
+        .order-item,
+        .admin-order-item,
+        .admin-size-row {
+            grid-template-columns: 1fr !important;
+        }
+
+        .cart-item > a,
+        .confirmation-item > div:first-child {
+            width: 100% !important;
+            max-width: 180px;
+            justify-self: start;
+        }
+
+        .cart-item-actions,
+        .confirmation-item > p,
+        .order-item > p:last-child,
+        .admin-order-item > p:last-child,
+        .admin-size-row > div:last-child {
+            grid-column: 1 / -1;
+        }
+
+        .cart-item-actions {
+            justify-items: stretch;
+        }
+
+        .cart-item-actions form {
+            justify-content: stretch;
+        }
+
+        .cart-item-actions .btn-outline,
+        .admin-product-form-actions .btn-accent,
+        .admin-product-form-actions .btn-outline,
+        .order-summary-card .btn-outline,
+        .confirmation-summary .btn-accent,
+        .confirmation-summary .btn-outline {
+            width: 100%;
+        }
+
+        .admin-orders-table,
+        .admin-brands-table,
+        .admin-sizes-table {
+            min-width: 640px;
+        }
+
+        .admin-order-sidebar,
+        .order-summary-card {
+            padding: 1rem !important;
+            border-radius: 16px !important;
+        }
+
+        .product-show-thumbs {
+            gap: 8px;
+        }
+
+        .product-show-thumbs img {
+            width: 64px !important;
+            height: 64px !important;
+        }
+
+        .product-show-actions > * {
+            width: 100%;
+        }
+
+        .cart-summary,
+        .confirmation-summary {
+            padding: 1rem !important;
+            border-radius: 16px !important;
+        }
+
+        .admin-archived-table-wrap table {
+            min-width: 760px;
+        }
+
+        .site-nav-links,
+        .site-nav-actions {
+            gap: 0.75rem;
+        }
+
+        .admin-orders-table,
+        .admin-brands-table,
+        .admin-sizes-table {
+            min-width: 560px;
+        }
+
+        .admin-orders-filters {
+            grid-template-columns: 1fr !important;
+        }
+
+        .admin-orders-stats {
+            grid-template-columns: 1fr !important;
+        }
+
+        .admin-orders-table-wrap,
+        .admin-brands-table-wrap,
+        .admin-sizes-table-wrap {
+            overflow-x: auto !important;
+        }
+
+        .orders-list-item {
+            grid-template-columns: 1fr !important;
+        }
+
+        .orders-list-item > div:last-child {
+            text-align: left;
+        }
+
+        .orders-list-item > div:last-child p {
+            text-align: left;
+        }
+
+        .order-metrics {
+            grid-template-columns: 1fr !important;
+        }
+
+        .order-item {
+            grid-template-columns: 1fr !important;
+        }
+
+        .order-item > div:first-child {
+            width: 100% !important;
+            max-width: 180px;
+        }
+
+        .admin-dashboard-search {
+            grid-template-columns: 1fr !important;
+        }
+
+        .admin-dashboard-tabs {
+            display: flex !important;
+            gap: 0.5rem;
+            padding-bottom: 0.25rem;
+        }
+
+        .admin-dashboard-tabs button {
+            white-space: nowrap;
+            padding-inline: 1rem !important;
+        }
+    }
 }

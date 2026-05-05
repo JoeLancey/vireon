@@ -1,21 +1,21 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="min-h-screen bg-gray-50 py-12">
+<div class="min-h-screen bg-gray-50 py-12 admin-sizes-page">
     <div class="container mx-auto max-w-6xl px-4">
         <div class="mb-6">
             <a href="{{ route('admin.dashboard') }}" class="text-blue-500 hover:underline">← Admin Dashboard</a>
         </div>
 
-        <div class="bg-white rounded-lg shadow-lg p-8">
-            <div class="flex justify-between items-center mb-6">
+        <div class="bg-white rounded-lg shadow-lg p-8 admin-sizes-card">
+            <div class="flex justify-between items-center mb-6 admin-sizes-header">
                 <h1 class="text-3xl font-bold">Manage Sizes</h1>
                 <a href="{{ route('admin.sizes.create') }}" class="bg-green-500 text-white px-6 py-2 rounded hover:bg-green-600">+ New Size</a>
             </div>
 
             @if($sizes->count() > 0)
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left">
+                <div class="overflow-x-auto admin-sizes-table-wrap">
+                    <table class="w-full text-left admin-sizes-table">
                         <thead class="bg-gray-100 border-b">
                             <tr>
                                 <th class="px-4 py-3">Name</th>

@@ -2,7 +2,7 @@
 @section('title', 'Edit Product')
 
 @section('content')
-<div style="max-width:700px;margin:2rem auto;padding:0 1.5rem;">
+<div class="page-container admin-product-form-page" style="max-width:700px;margin:2rem auto;padding:0 1.5rem;">
     <a href="{{ route('admin.products.index') }}" style="color:var(--muted);text-decoration:none;font-size:0.875rem;">← Back to Products</a>
     <h1 class="font-display" style="font-size:2.5rem;color:#fff;margin:0.5rem 0 0.25rem;">EDIT PRODUCT</h1>
     <p style="color:var(--muted);margin-bottom:1.5rem;">{{ $product->name }}</p>
@@ -16,7 +16,7 @@
             </div>
             @endif
 
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;">
+            <div class="admin-product-form-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;">
                 <div style="grid-column:1/-1;">
                     <label for="name">Product Name *</label>
                     <input type="text" id="name" name="name" value="{{ old('name', $product->name) }}" required>
@@ -96,7 +96,7 @@
                 </div>
             </div>
 
-            <div style="margin-top:2rem;display:flex;gap:1rem;flex-wrap:wrap;">
+            <div class="admin-product-form-actions" style="margin-top:2rem;display:flex;gap:1rem;flex-wrap:wrap;">
                 <button type="submit" class="btn-accent" style="border:none;cursor:pointer;font-size:1rem;padding:0.75rem 2rem;">Save Changes</button>
                 <a href="{{ route('admin.products.manage-sizes', $product) }}" class="btn-outline" style="text-decoration:none;display:inline-block;">Manage Sizes</a>
                 <a href="{{ route('admin.products.index') }}" class="btn-outline">Cancel</a>

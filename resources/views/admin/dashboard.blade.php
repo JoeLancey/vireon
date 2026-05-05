@@ -2,7 +2,7 @@
 @section('title', 'Admin Dashboard')
 
 @section('content')
-<div style="max-width:1200px;margin:0 auto;padding:2rem 1.5rem;">
+<div class="page-container admin-dashboard-page" style="max-width:1200px;margin:0 auto;padding:2rem 1.5rem;">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:2rem;gap:1rem;flex-wrap:wrap;">
         <div>
             <h1 class="font-display" style="font-size:2.5rem;color:#fff;">ADMIN DASHBOARD</h1>
@@ -84,7 +84,7 @@
     </div>
 
     <div style="margin-bottom:2.5rem;">
-        <div style="display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:2rem;flex-wrap:wrap;gap:1rem;">
+        <div class="admin-dashboard-tabs-head" style="display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:2rem;flex-wrap:wrap;gap:1rem;">
             <div>
                 <h2 class="font-display" style="font-size:1.75rem;color:#fff;margin-bottom:0.5rem;">ADMIN MANAGEMENT</h2>
                 <p style="color:var(--muted);margin:0;">Manage products and brands directly from the admin page.</p>
@@ -96,7 +96,7 @@
             </div>
         </div>
 
-        <div style="margin-bottom:2rem;display:flex;border-bottom:1px solid var(--border);">
+        <div class="admin-dashboard-tabs" style="margin-bottom:2rem;display:flex;border-bottom:1px solid var(--border);">
             <button onclick="showTab('products')" id="products-tab"
                     style="background:none;border:none;color:#fff;padding:1rem 2rem;cursor:pointer;border-bottom:3px solid {{ request('tab', 'products') === 'products' ? 'var(--accent)' : 'transparent' }};font-weight:600;">
                 PRODUCTS
@@ -108,7 +108,7 @@
         </div>
 
         <div id="products-content" style="display:{{ request('tab', 'products') === 'products' ? 'block' : 'none' }};">
-            <div style="display:grid;grid-template-columns:240px 1fr;gap:2rem;align-items:start;">
+            <div class="admin-dashboard-products-layout" style="display:grid;grid-template-columns:240px 1fr;gap:2rem;align-items:start;">
                 <aside>
                     <div class="card" style="padding:1.5rem;">
                         <h3 style="color:#fff;font-weight:700;margin-bottom:1.25rem;font-size:0.9rem;text-transform:uppercase;letter-spacing:0.1em;">Filter by Brand</h3>
@@ -138,7 +138,7 @@
                 </aside>
 
                 <div>
-                    <form method="GET" action="{{ route('admin.dashboard') }}" style="margin-bottom:1.5rem;display:flex;gap:0.75rem;flex-wrap:wrap;">
+                    <form method="GET" action="{{ route('admin.dashboard') }}" class="admin-dashboard-search" style="margin-bottom:1.5rem;display:flex;gap:0.75rem;flex-wrap:wrap;">
                         <input type="hidden" name="tab" value="products">
                         @if(request('brand'))<input type="hidden" name="brand" value="{{ request('brand') }}">@endif
                         @if(request('category'))<input type="hidden" name="category" value="{{ request('category') }}">@endif

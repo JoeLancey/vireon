@@ -2,9 +2,9 @@
 @section('title', 'Products')
 
 @section('content')
-<div style="max-width:1200px;margin:0 auto;padding:2rem 1.5rem;">
+<div class="page-container products-index-page" style="max-width:1200px;margin:0 auto;padding:2rem 1.5rem;">
 
-    <div style="display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:2rem;">
+    <div class="products-index-header" style="display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:2rem;">
         <div>
             <h1 class="font-display" style="font-size:3rem;color:#fff;margin-bottom:0.25rem;">
                 @if($selectedBrand) {{ strtoupper($selectedBrand->name) }} @else ALL PRODUCTS @endif
@@ -18,7 +18,7 @@
         @endauth
     </div>
 
-    <div style="display:grid;grid-template-columns:220px 1fr;gap:2rem;align-items:start;">
+    <div class="products-index-layout" style="display:grid;grid-template-columns:220px 1fr;gap:2rem;align-items:start;">
 
         {{-- Sidebar --}}
         <aside>
@@ -51,7 +51,7 @@
 
         {{-- Products --}}
         <div>
-            <form method="GET" action="{{ route('products.index') }}" style="margin-bottom:1.5rem;display:flex;gap:0.75rem;flex-wrap:wrap;align-items:center;">
+            <form method="GET" action="{{ route('products.index') }}" class="products-index-form" style="margin-bottom:1.5rem;display:flex;gap:0.75rem;flex-wrap:wrap;align-items:center;">
                 @if(request('brand'))<input type="hidden" name="brand" value="{{ request('brand') }}">@endif
                 @if(request('category'))<input type="hidden" name="category" value="{{ request('category') }}">@endif
                 <input type="text" name="search" value="{{ request('search') }}" placeholder="Search products..." style="flex:1;min-width:220px;">

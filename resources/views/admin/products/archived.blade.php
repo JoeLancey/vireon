@@ -2,8 +2,8 @@
 @section('title', 'Archived Products')
 
 @section('content')
-<div style="max-width:1200px;margin:0 auto;padding:2rem 1.5rem;">
-    <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;flex-wrap:wrap;margin-bottom:2rem;">
+<div class="page-container admin-archived-page" style="max-width:1200px;margin:0 auto;padding:2rem 1.5rem;">
+    <div class="admin-archived-header" style="display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;flex-wrap:wrap;margin-bottom:2rem;">
         <div>
             <p style="color:var(--muted);font-size:0.8rem;text-transform:uppercase;letter-spacing:0.12em;margin-bottom:0.5rem;">Admin / Products</p>
             <h1 class="font-display" style="font-size:2.5rem;color:#fff;margin-bottom:0.5rem;">ARCHIVED PRODUCTS</h1>
@@ -15,7 +15,7 @@
         </div>
     </div>
 
-    <div style="display:grid;grid-template-columns:240px 1fr;gap:2rem;align-items:start;">
+    <div class="admin-archived-layout" style="display:grid;grid-template-columns:240px 1fr;gap:2rem;align-items:start;">
         <aside>
             <div class="card" style="padding:1.5rem;">
                 <h3 style="color:#fff;font-weight:700;margin-bottom:1.25rem;font-size:0.9rem;text-transform:uppercase;letter-spacing:0.1em;">Filter by Brand</h3>
@@ -49,7 +49,7 @@
         </aside>
 
         <div>
-            <form method="GET" action="{{ route('admin.products.archived') }}" style="margin-bottom:1.5rem;display:flex;gap:0.75rem;flex-wrap:wrap;">
+            <form method="GET" action="{{ route('admin.products.archived') }}" class="admin-archived-search" style="margin-bottom:1.5rem;display:flex;gap:0.75rem;flex-wrap:wrap;">
                 @if(request('brand'))<input type="hidden" name="brand" value="{{ request('brand') }}">@endif
                 @if(request('category'))<input type="hidden" name="category" value="{{ request('category') }}">@endif
                 <input type="text" name="search" value="{{ request('search') }}" placeholder="Search archived products..." style="flex:1;min-width:220px;">
@@ -57,7 +57,7 @@
             </form>
 
             @if($products->count())
-            <div class="card" style="overflow:hidden;">
+            <div class="card admin-archived-table-wrap" style="overflow:hidden;">
                 <table style="width:100%;border-collapse:collapse;">
                     <thead>
                         <tr style="border-bottom:1px solid var(--border);background:#111;">

@@ -2,8 +2,8 @@
 @section('title', 'Manage Order')
 
 @section('content')
-<div style="max-width:1160px;margin:2rem auto;padding:0 1.5rem 3rem;">
-    <div style="display:flex;justify-content:space-between;align-items:flex-end;gap:1rem;flex-wrap:wrap;margin-bottom:1.3rem;">
+<div class="page-container admin-orders-show-page" style="max-width:1160px;margin:2rem auto;padding:0 1.5rem 3rem;">
+    <div class="admin-orders-header" style="display:flex;justify-content:space-between;align-items:flex-end;gap:1rem;flex-wrap:wrap;margin-bottom:1.3rem;">
         <div>
             <a href="{{ route('admin.orders.index') }}" style="color:var(--muted);text-decoration:none;font-size:0.875rem;">← Back to Orders</a>
             <h1 class="font-display" style="font-size:clamp(2rem,4.6vw,3.4rem);line-height:0.95;margin:0.55rem 0 0;color:#fff;">{{ $order->order_number }}</h1>
@@ -16,9 +16,9 @@
         <div class="alert-success" style="margin-bottom:1rem;">{{ session('success') }}</div>
     @endif
 
-    <div style="display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:1.2rem;align-items:start;">
+    <div class="admin-orders-show-layout" style="display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:1.2rem;align-items:start;">
         <section class="card" style="padding:1.2rem;border-radius:16px;">
-            <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0.8rem;margin-bottom:1rem;">
+            <div class="admin-order-info-grid" style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0.8rem;margin-bottom:1rem;">
                 <div style="padding:0.8rem;border-radius:10px;border:1px solid var(--border);background:#111;">
                     <p style="margin:0;color:#777;font-size:0.72rem;letter-spacing:0.12em;text-transform:uppercase;">Customer</p>
                     <p style="margin:0.35rem 0 0;color:#fff;font-weight:600;">{{ $order->recipient_name }}</p>
@@ -52,7 +52,7 @@
 
             <div style="display:grid;gap:0.75rem;">
                 @foreach($order->items as $item)
-                <div style="display:grid;grid-template-columns:64px minmax(0,1fr) auto;gap:0.75rem;align-items:center;padding:0.7rem;border:1px solid var(--border);border-radius:12px;background:#101010;">
+                <div class="admin-order-item" style="display:grid;grid-template-columns:64px minmax(0,1fr) auto;gap:0.75rem;align-items:center;padding:0.7rem;border:1px solid var(--border);border-radius:12px;background:#101010;">
                     <div style="width:64px;height:64px;border-radius:10px;overflow:hidden;background:#1A1A1A;">
                         @if($item->product_image)
                             <img src="{{ Storage::url($item->product_image) }}" alt="{{ $item->product_name }}" style="width:100%;height:100%;object-fit:cover;">
@@ -70,7 +70,7 @@
             </div>
         </section>
 
-        <aside class="card" style="padding:1.2rem;border-radius:14px;position:sticky;top:88px;">
+        <aside class="card admin-order-sidebar" style="padding:1.2rem;border-radius:14px;position:sticky;top:88px;">
             <p style="margin:0;color:var(--accent);font-size:0.72rem;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;">Update Order</p>
             <form method="POST" action="{{ route('admin.orders.update', $order) }}" style="display:grid;gap:0.9rem;margin-top:0.9rem;">
                 @csrf

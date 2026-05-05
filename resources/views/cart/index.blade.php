@@ -6,10 +6,10 @@
     $subtotal = (float) $cart->items->sum(fn ($item) => $item->subtotal());
     $expressFee = 249.00;
 @endphp
-<div style="max-width:1180px;margin:2rem auto;padding:0 1.5rem 3rem;">
-    <div style="margin-bottom:1.4rem;padding:1rem;border:1px solid var(--border);border-radius:14px;background:linear-gradient(180deg,#141414,#101010);">
+<div class="page-container cart-page" style="max-width:1180px;margin:2rem auto;padding:0 1.5rem 3rem;">
+    <div class="cart-step-panel" style="margin-bottom:1.4rem;padding:1rem;border:1px solid var(--border);border-radius:14px;background:linear-gradient(180deg,#141414,#101010);">
         <p style="color:#666;font-size:0.72rem;text-transform:uppercase;letter-spacing:0.18em;margin:0 0 0.8rem;">Checkout Flow</p>
-        <div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0.7rem;">
+        <div class="cart-step-grid" style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0.7rem;">
             <div style="padding:0.65rem 0.7rem;border-radius:10px;border:1px solid var(--accent);background:rgba(200,255,0,0.08);">
                 <p style="margin:0;color:var(--accent);font-size:0.7rem;letter-spacing:0.14em;text-transform:uppercase;">Step 1</p>
                 <p style="margin:0.2rem 0 0;color:#fff;font-weight:600;font-size:0.88rem;">Bag</p>
@@ -29,7 +29,7 @@
         </div>
     </div>
 
-    <div style="display:flex;justify-content:space-between;align-items:flex-end;gap:1rem;flex-wrap:wrap;margin-bottom:2rem;">
+    <div class="cart-header" style="display:flex;justify-content:space-between;align-items:flex-end;gap:1rem;flex-wrap:wrap;margin-bottom:2rem;">
         <div>
             <a href="{{ route('products.index') }}" style="color:var(--muted);text-decoration:none;font-size:0.875rem;letter-spacing:0.04em;">← Continue Shopping</a>
             <h1 class="font-display" style="font-size:clamp(2.2rem,5vw,3.8rem);color:#fff;margin:0.65rem 0 0;line-height:0.95;">YOUR CART</h1>
@@ -60,10 +60,10 @@
             <a href="{{ route('products.index') }}" class="btn-accent">Browse Products</a>
         </div>
     @else
-        <div style="display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:1.5rem;align-items:start;">
-            <div style="display:grid;gap:1rem;">
+        <div class="cart-layout" style="display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:1.5rem;align-items:start;">
+            <div class="cart-items" style="display:grid;gap:1rem;">
                 @foreach($cart->items as $item)
-                <div class="card" style="padding:1rem;border-radius:18px;display:grid;grid-template-columns:110px minmax(0,1fr) auto;gap:1rem;align-items:center;">
+                <div class="card cart-item" style="padding:1rem;border-radius:18px;display:grid;grid-template-columns:110px minmax(0,1fr) auto;gap:1rem;align-items:center;">
                     <a href="{{ route('products.show', $item->product) }}" style="display:block;width:110px;height:110px;background:#1A1A1A;border-radius:14px;overflow:hidden;flex-shrink:0;">
                         @if($item->product->image)
                             <img src="{{ Storage::url($item->product->image) }}" alt="{{ $item->product->name }}" style="width:100%;height:100%;object-fit:cover;">
@@ -86,7 +86,7 @@
                         </p>
                     </div>
 
-                    <div style="display:grid;gap:0.75rem;justify-items:end;min-width:170px;">
+                    <div class="cart-item-actions" style="display:grid;gap:0.75rem;justify-items:end;min-width:170px;">
                         <form method="POST" action="{{ route('cart.update', $item->product) }}" style="display:flex;align-items:flex-end;gap:0.5rem;flex-wrap:wrap;justify-content:flex-end;">
                             @csrf
                             @method('PATCH')
@@ -114,7 +114,7 @@
                 @endforeach
             </div>
 
-            <aside class="card" style="padding:1.5rem;border-radius:20px;position:sticky;top:88px;">
+            <aside class="card cart-summary" style="padding:1.5rem;border-radius:20px;position:sticky;top:88px;">
                 <p style="color:var(--accent);font-size:0.75rem;letter-spacing:0.18em;font-weight:700;margin:0 0 0.75rem;text-transform:uppercase;">Checkout Summary</p>
                 <h2 style="color:#fff;font-size:1.4rem;margin:0 0 1rem;line-height:1;">Ready to buy</h2>
 

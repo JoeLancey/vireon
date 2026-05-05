@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-<div style="max-width:1000px;margin:2rem auto;padding:0 1.5rem;">
+<div class="page-container admin-sizes-page" style="max-width:1000px;margin:2rem auto;padding:0 1.5rem;">
     <a href="{{ route('admin.products.edit', $product) }}" style="color:var(--muted);text-decoration:none;font-size:0.875rem;">← Back to Product</a>
 
     <h1 class="font-display" style="font-size:2.2rem;color:#fff;margin:0.7rem 0 0.3rem;">MANAGE SIZE STOCK</h1>
@@ -27,7 +27,7 @@
                                 $isAssigned = (bool) $assignedSize;
                                 $sizeStock = $assignedSize?->pivot?->stock ?? 0;
                             @endphp
-                            <div style="display:grid;grid-template-columns:minmax(0,1fr) 180px;gap:0.75rem;align-items:center;padding:0.75rem;border:1px solid var(--border);border-radius:10px;background:#101010;">
+                            <div class="admin-size-row" style="display:grid;grid-template-columns:minmax(0,1fr) 180px;gap:0.75rem;align-items:center;padding:0.75rem;border:1px solid var(--border);border-radius:10px;background:#101010;">
                                 <label style="display:flex;align-items:center;gap:0.6rem;cursor:pointer;color:#fff;">
                                     <input type="checkbox"
                                            name="sizes[]"
@@ -53,7 +53,7 @@
                 </section>
             @endforeach
 
-            <div style="display:flex;gap:0.75rem;flex-wrap:wrap;margin-top:0.5rem;">
+            <div class="admin-product-form-actions" style="display:flex;gap:0.75rem;flex-wrap:wrap;margin-top:0.5rem;">
                 <button type="submit" class="btn-accent" style="border:none;cursor:pointer;">Save Size Stock</button>
                 <a href="{{ route('admin.products.edit', $product) }}" class="btn-outline">Cancel</a>
             </div>

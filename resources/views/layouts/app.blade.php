@@ -72,11 +72,11 @@
         : 0;
 @endphp
 <nav style="background:#0D0D0D;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100;">
-    <div style="max-width:1200px;margin:0 auto;padding:0 1.5rem;display:flex;align-items:center;justify-content:space-between;height:64px;">
+    <div class="site-nav-inner" style="max-width:1200px;margin:0 auto;padding:0 1.5rem;display:flex;align-items:center;justify-content:space-between;height:64px;">
         <a href="{{ route('home') }}" style="text-decoration:none;">
             <span class="font-display" style="font-size:1.8rem;color:#fff;letter-spacing:0.1em;">VIR<span style="color:var(--accent);">E</span>ON</span>
         </a>
-        <div style="display:flex;align-items:center;gap:2rem;">
+        <div class="site-nav-links" style="display:flex;align-items:center;gap:2rem;">
             <a href="{{ route('home') }}" class="nav-link {{ request()->routeIs('home') ? 'active' : '' }}">Home</a>
             <a href="{{ route('products.index') }}" class="nav-link {{ request()->routeIs('products.*') ? 'active' : '' }}">Products</a>
             @auth
@@ -94,7 +94,7 @@
                 @endif
             @endauth
         </div>
-        <div style="display:flex;align-items:center;gap:1rem;">
+        <div class="site-nav-actions" style="display:flex;align-items:center;gap:1rem;">
             @guest
                 <a href="{{ route('login') }}" class="nav-link {{ request()->routeIs('login') ? 'active' : '' }}">Login</a>
                 <a href="{{ route('register') }}" class="btn-accent" style="font-size:0.875rem;">Register</a>

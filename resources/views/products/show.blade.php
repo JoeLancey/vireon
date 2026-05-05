@@ -2,16 +2,16 @@
 @section('title', $product->name)
 
 @section('content')
-<div style="max-width:1100px;margin:2rem auto;padding:0 1.5rem;">
+<div class="page-container product-show-page" style="max-width:1100px;margin:2rem auto;padding:0 1.5rem;">
     <a href="{{ route('products.index') }}" style="color:var(--muted);text-decoration:none;font-size:0.875rem;">← Back to Products</a>
 
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:3rem;margin-top:2rem;align-items:start;">
+    <div class="product-show-layout" style="display:grid;grid-template-columns:1fr 1fr;gap:3rem;margin-top:2rem;align-items:start;">
 
         {{-- Image Gallery --}}
-        <div style="display:flex;gap:12px;align-items:flex-start;">
+        <div class="product-show-gallery" style="display:flex;gap:12px;align-items:flex-start;">
 
             {{-- Main Image --}}
-            <div style="background:#161616;border:1px solid var(--border);border-radius:12px;overflow:hidden;flex:1;height:450px;">
+            <div class="product-show-main" style="background:#161616;border:1px solid var(--border);border-radius:12px;overflow:hidden;flex:1;height:450px;">
                 @if($product->image)
                     <img id="mainImage" src="{{ Storage::url($product->image) }}" alt="{{ $product->name }}" style="width:100%;height:100%;object-fit:cover;">
                 @else
@@ -23,7 +23,7 @@
 
             {{-- Thumbnails (Right Side) --}}
             @if($product->image || $product->images->count())
-            <div style="display:flex;flex-direction:column;gap:10px;">
+            <div class="product-show-thumbs" style="display:flex;flex-direction:column;gap:10px;">
                 @if($product->image)
                 <img src="{{ Storage::url($product->image) }}" onclick="changeImage(this)"
                      style="width:80px;height:80px;object-fit:cover;border-radius:8px;border:2px solid var(--accent);cursor:pointer;">
@@ -39,7 +39,7 @@
 
         {{-- Product Video (if available) --}}
         @if($product->video)
-        <div style="grid-column:1/-1;margin-top:2rem;">
+        <div class="product-show-video" style="grid-column:1/-1;margin-top:2rem;">
             <h2 style="color:#fff;font-size:1.25rem;margin-bottom:1rem;font-weight:600;">Product Video</h2>
             <div style="background:#161616;border:1px solid var(--border);border-radius:12px;overflow:hidden;aspect-ratio:16/9;">
                 <video width="100%" height="100%" style="width:100%;height:100%;object-fit:cover;" controls>
@@ -51,7 +51,7 @@
         @endif
 
         {{-- Details --}}
-        <div>
+        <div class="product-show-details">
             @php
                 $brandAccent = $product->brand?->accent_color ?? '#C8FF00';
                 $brandName = $product->brand?->name ?? 'VIREON';
@@ -83,7 +83,7 @@
 
                     {{-- Size Selection --}}
                     @if($product->sizes->count())
-                    <div style="padding:1rem;background:#1A1A1A;border:1px solid var(--border);border-radius:10px;">
+                    <div class="product-show-sizes" style="padding:1rem;background:#1A1A1A;border:1px solid var(--border);border-radius:10px;">
                         <label style="color:#fff;display:block;margin-bottom:0.75rem;font-weight:600;font-size:0.95rem;">Select Size *</label>
                         <div style="display:flex;gap:0.5rem;flex-wrap:wrap;">
                             @foreach($product->sizes as $size)
@@ -101,7 +101,7 @@
                     @endif
 
                     {{-- Quantity & Action Buttons --}}
-                    <div style="display:flex;gap:0.75rem;align-items:flex-end;flex-wrap:wrap;">
+                    <div class="product-show-actions" style="display:flex;gap:0.75rem;align-items:flex-end;flex-wrap:wrap;">
                         <div style="flex:0 0 120px;">
                             <label for="quantity" style="margin-bottom:0.45rem;color:var(--muted);font-size:0.8rem;display:block;">Quantity</label>
                             <input id="quantity" type="number" name="quantity" min="1" max="{{ max($product->stock, 1) }}" value="1" {{ $product->stock < 1 ? 'disabled' : '' }}>

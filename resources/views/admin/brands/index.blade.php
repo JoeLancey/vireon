@@ -2,14 +2,14 @@
 @section('title', 'Manage Brands')
 
 @section('content')
-<div style="max-width:1000px;margin:2rem auto;padding:0 1.5rem;">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:2rem;">
+<div class="page-container admin-brands-page" style="max-width:1000px;margin:2rem auto;padding:0 1.5rem;">
+    <div class="admin-brands-header" style="display:flex;align-items:center;justify-content:space-between;margin-bottom:2rem;">
         <h1 class="font-display" style="font-size:2.5rem;color:#fff;">MANAGE BRANDS</h1>
         <a href="{{ route('admin.brands.create') }}" class="btn-accent">+ Add Brand</a>
     </div>
 
-    <div class="card" style="overflow:hidden;">
-        <table style="width:100%;border-collapse:collapse;">
+    <div class="card admin-brands-table-wrap" style="overflow:hidden;">
+        <table class="admin-brands-table" style="width:100%;border-collapse:collapse;">
             <thead>
                 <tr style="border-bottom:1px solid var(--border);">
                     <th style="padding:1rem;text-align:left;color:var(--muted);font-size:0.75rem;text-transform:uppercase;">Brand</th>
