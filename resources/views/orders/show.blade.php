@@ -52,7 +52,7 @@
                 <div class="order-item" style="display:grid;grid-template-columns:64px minmax(0,1fr) auto;gap:0.75rem;align-items:center;padding:0.7rem;border:1px solid var(--border);border-radius:12px;background:#101010;">
                     <div style="width:64px;height:64px;border-radius:10px;overflow:hidden;background:#1A1A1A;">
                         @if($item->product_image)
-                            <img src="{{ Storage::url($item->product_image) }}" alt="{{ $item->product_name }}" style="width:100%;height:100%;object-fit:cover;">
+                            <img src="{{ storage_asset_url($item->product_image) }}" alt="{{ $item->product_name }}" style="width:100%;height:100%;object-fit:cover;">
                         @else
                             <div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:#333;font-weight:700;">{{ strtoupper(substr($item->product_name, 0, 2)) }}</div>
                         @endif

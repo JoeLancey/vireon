@@ -66,7 +66,7 @@
                 <div class="card cart-item" style="padding:1rem;border-radius:18px;display:grid;grid-template-columns:110px minmax(0,1fr) auto;gap:1rem;align-items:center;">
                     <a href="{{ route('products.show', $item->product) }}" style="display:block;width:110px;height:110px;background:#1A1A1A;border-radius:14px;overflow:hidden;flex-shrink:0;">
                         @if($item->product->image)
-                            <img src="{{ Storage::url($item->product->image) }}" alt="{{ $item->product->name }}" style="width:100%;height:100%;object-fit:cover;">
+                            <img src="{{ storage_asset_url($item->product->image) }}" alt="{{ $item->product->name }}" style="width:100%;height:100%;object-fit:cover;">
                         @else
                             <div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;">
                                 <span class="font-display" style="color:#333;font-size:2rem;">{{ substr($item->product->name, 0, 2) }}</span>

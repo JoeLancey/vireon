@@ -13,7 +13,7 @@
             {{-- Main Image --}}
             <div class="product-show-main" style="background:#161616;border:1px solid var(--border);border-radius:12px;overflow:hidden;flex:1;height:450px;">
                 @if($product->image)
-                    <img id="mainImage" src="{{ Storage::url($product->image) }}" alt="{{ $product->name }}" style="width:100%;height:100%;object-fit:cover;">
+                    <img id="mainImage" src="{{ storage_asset_url($product->image) }}" alt="{{ $product->name }}" style="width:100%;height:100%;object-fit:cover;">
                 @else
                     <div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;">
                         <span class="font-display" style="color:#2A2A2A;font-size:5rem;">{{ substr($product->name,0,2) }}</span>
@@ -25,11 +25,11 @@
             @if($product->image || $product->images->count())
             <div class="product-show-thumbs" style="display:flex;flex-direction:column;gap:10px;">
                 @if($product->image)
-                <img src="{{ Storage::url($product->image) }}" onclick="changeImage(this)"
+                 <img src="{{ storage_asset_url($product->image) }}" onclick="changeImage(this)"
                      style="width:80px;height:80px;object-fit:cover;border-radius:8px;border:2px solid var(--accent);cursor:pointer;">
                 @endif
                 @foreach($product->images as $img)
-                <img src="{{ Storage::url($img->image_path) }}" onclick="changeImage(this)"
+                 <img src="{{ storage_asset_url($img->image_path) }}" onclick="changeImage(this)"
                      style="width:80px;height:80px;object-fit:cover;border-radius:8px;border:2px solid var(--border);cursor:pointer;">
                 @endforeach
             </div>
@@ -43,7 +43,7 @@
             <h2 style="color:#fff;font-size:1.25rem;margin-bottom:1rem;font-weight:600;">Product Video</h2>
             <div style="background:#161616;border:1px solid var(--border);border-radius:12px;overflow:hidden;aspect-ratio:16/9;">
                 <video width="100%" height="100%" style="width:100%;height:100%;object-fit:cover;" controls>
-                    <source src="{{ Storage::url($product->video) }}" type="video/mp4">
+                    <source src="{{ storage_asset_url($product->video) }}" type="video/mp4">
                     Your browser does not support the video tag.
                 </video>
             </div>
@@ -242,7 +242,7 @@
                      onmouseout="this.style.borderColor='var(--border)'">
                     <div style="background:#1A1A1A;height:140px;display:flex;align-items:center;justify-content:center;">
                         @if($rel->image)
-                            <img src="{{ Storage::url($rel->image) }}" alt="{{ $rel->name }}" style="width:100%;height:100%;object-fit:cover;">
+                            <img src="{{ storage_asset_url($rel->image) }}" alt="{{ $rel->name }}" style="width:100%;height:100%;object-fit:cover;">
                         @else
                             <span class="font-display" style="color:#333;font-size:2rem;">{{ substr($rel->name,0,2) }}</span>
                         @endif

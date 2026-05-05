@@ -53,7 +53,7 @@
                     @if($product->image)
                     <label>Current Image</label>
                     <div style="background:#1A1A1A;border:1px solid var(--border);border-radius:6px;padding:1rem;display:inline-block;margin-bottom:0.75rem;">
-                        <img src="{{ Storage::url($product->image) }}" alt="{{ $product->name }}" style="max-height:120px;max-width:200px;object-fit:contain;">
+                        <img src="{{ storage_asset_url($product->image) }}" alt="{{ $product->name }}" style="max-height:120px;max-width:200px;object-fit:contain;">
                     </div>
                     @endif
                     <label for="image">{{ $product->image ? 'Replace Image' : 'Product Image' }}</label>
@@ -66,7 +66,7 @@
                     <label>Current Additional Images</label>
                     <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:0.75rem;">
                         @foreach($product->images as $img)
-                        <img src="{{ Storage::url($img->image_path) }}" style="width:80px;height:80px;object-fit:cover;border-radius:6px;border:1px solid var(--border);">
+                        <img src="{{ storage_asset_url($img->image_path) }}" style="width:80px;height:80px;object-fit:cover;border-radius:6px;border:1px solid var(--border);">
                         @endforeach
                     </div>
                     @endif
@@ -80,7 +80,7 @@
                     @if($product->video)
                     <div style="background:#1A1A1A;border:1px solid var(--border);border-radius:6px;padding:1rem;display:block;margin-bottom:0.75rem;">
                         <video width="200" height="120" style="max-width:100%;object-fit:contain;border-radius:4px;" controls>
-                            <source src="{{ Storage::url($product->video) }}" type="video/mp4">
+                            <source src="{{ storage_asset_url($product->video) }}" type="video/mp4">
                             Your browser does not support the video tag.
                         </video>
                     </div>

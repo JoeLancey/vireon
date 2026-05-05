@@ -76,7 +76,7 @@
                                 <div style="display:flex;align-items:center;gap:0.9rem;">
                                     <div style="width:56px;height:56px;border-radius:8px;overflow:hidden;background:#111;flex-shrink:0;">
                                         @if($product->image)
-                                            <img src="{{ Storage::url($product->image) }}" alt="{{ $product->name }}" style="width:100%;height:100%;object-fit:cover;">
+                                            <img src="{{ storage_asset_url($product->image) }}" alt="{{ $product->name }}" style="width:100%;height:100%;object-fit:cover;">
                                         @else
                                             <div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;">
                                                 <span class="font-display" style="color:#333;font-size:1.2rem;">{{ substr($product->name, 0, 2) }}</span>

@@ -70,7 +70,7 @@
                 <div class="confirmation-item" style="display:grid;grid-template-columns:64px minmax(0,1fr) auto;gap:0.8rem;align-items:center;padding:0.75rem;border-radius:12px;border:1px solid var(--border);background:#111;">
                     <div style="width:64px;height:64px;border-radius:10px;overflow:hidden;background:#1A1A1A;">
                         @if($item['image'])
-                            <img src="{{ Storage::url($item['image']) }}" alt="{{ $item['name'] }}" style="width:100%;height:100%;object-fit:cover;">
+                            <img src="{{ storage_asset_url($item['image']) }}" alt="{{ $item['name'] }}" style="width:100%;height:100%;object-fit:cover;">
                         @else
                             <div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:#333;font-weight:700;">{{ strtoupper(substr($item['name'], 0, 2)) }}</div>
                         @endif

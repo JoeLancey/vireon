@@ -69,7 +69,7 @@
         @foreach($heroImages as $i => $product)
         <div class="hero-slide" style="position:absolute;inset:0;opacity:{{ $i === 0 ? '1' : '0' }};transition:opacity 1s ease-in-out;">
             @if($product->image)
-                <img src="{{ Storage::url($product->image) }}" alt="{{ $product->name }}" loading="lazy" style="width:100%;height:100%;object-fit:cover;object-position:center;">
+                <img src="{{ storage_asset_url($product->image) }}" alt="{{ $product->name }}" loading="lazy" style="width:100%;height:100%;object-fit:cover;object-position:center;">
             @else
                 <div style="width:100%;height:100%;background:linear-gradient(135deg,#1a1a1a,#0D0D0D);display:flex;align-items:center;justify-content:center;">
                     <span class="font-display" style="font-size:30rem;color:#ffffff05;opacity:0.3;">{{ substr($product->name,0,1) }}</span>
@@ -142,7 +142,7 @@
                 <div style="position:relative;overflow:hidden;border-radius:12px;aspect-ratio:1;background:linear-gradient(135deg,#111,#1a1a1a);border:1px solid var(--border);transition:all 0.4s ease;cursor:pointer;" class="product-card" onmouseover="this.style.transform='scale(1.02)';this.style.borderColor='var(--accent)'" onmouseout="this.style.transform='scale(1)';this.style.borderColor='var(--border)'">
                     {{-- Product Image --}}
                     @if($product->image)
-                        <img src="{{ Storage::url($product->image) }}" alt="{{ $product->name }}" loading="lazy" style="width:100%;height:100%;object-fit:cover;object-position:center;transition:transform 0.4s ease;" class="product-img" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                        <img src="{{ storage_asset_url($product->image) }}" alt="{{ $product->name }}" loading="lazy" style="width:100%;height:100%;object-fit:cover;object-position:center;transition:transform 0.4s ease;" class="product-img" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
                     @else
                         <div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#1a1a1a,#111);">
                             <span class="font-display" style="font-size:6rem;color:#ffffff08;">{{ substr($product->name,0,1) }}</span>
@@ -195,7 +195,7 @@
                     {{-- Brand Logo/Content --}}
                     <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;z-index:2;">
                         @if($brand->logo)
-                            <img src="{{ Storage::url($brand->logo) }}" alt="{{ $brand->name }}" style="width:120px;max-height:120px;height:auto;object-fit:contain;opacity:0.95;transition:transform 0.3s;" onmouseover="this.style.transform='scale(1.08)'" onmouseout="this.style.transform='scale(1)'">
+                            <img src="{{ storage_asset_url($brand->logo) }}" alt="{{ $brand->name }}" style="width:120px;max-height:120px;height:auto;object-fit:contain;opacity:0.95;transition:transform 0.3s;" onmouseover="this.style.transform='scale(1.08)'" onmouseout="this.style.transform='scale(1)'">
                         @else
                             <div style="text-align:center;">
                                 <div class="font-display" style="color:{{ $brand->accent_color ?? 'var(--accent)' }};font-size:3rem;font-weight:700;line-height:1;margin-bottom:0.5rem;">{{ substr($brand->name,0,3) }}</div>
@@ -235,7 +235,7 @@
                 <div style="position:relative;overflow:hidden;border-radius:12px;aspect-ratio:1;background:linear-gradient(135deg,#111,#1a1a1a);border:1px solid var(--border);transition:all 0.3s ease;cursor:pointer;" onmouseover="this.style.transform='scale(1.02)';this.style.borderColor='var(--accent)'" onmouseout="this.style.transform='scale(1)';this.style.borderColor='var(--border)'">
                     {{-- Product Image --}}
                     @if($product->image)
-                        <img src="{{ Storage::url($product->image) }}" alt="{{ $product->name }}" loading="lazy" style="width:100%;height:100%;object-fit:cover;object-position:center;transition:transform 0.4s ease;" onmouseover="this.style.transform='scale(1.08)'" onmouseout="this.style.transform='scale(1)'">
+                        <img src="{{ storage_asset_url($product->image) }}" alt="{{ $product->name }}" loading="lazy" style="width:100%;height:100%;object-fit:cover;object-position:center;transition:transform 0.4s ease;" onmouseover="this.style.transform='scale(1.08)'" onmouseout="this.style.transform='scale(1)'">
                     @else
                         <div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#1a1a1a,#111);">
                             <span class="font-display" style="font-size:5rem;color:#ffffff08;">{{ substr($product->name,0,1) }}</span>

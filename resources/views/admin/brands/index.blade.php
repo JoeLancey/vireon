@@ -26,7 +26,7 @@
                         <div style="display:flex;align-items:center;gap:0.75rem;">
                             <div style="width:36px;height:36px;border-radius:50%;background:{{ $brand->accent_color }}22;border:2px solid {{ $brand->accent_color }};display:flex;align-items:center;justify-content:center;overflow:hidden;">
                                 @if($brand->logo)
-                                    <img src="{{ Storage::url($brand->logo) }}" alt="{{ $brand->name }} logo" style="width:100%;height:100%;object-fit:contain;">
+                                    <img src="{{ storage_asset_url($brand->logo) }}" alt="{{ $brand->name }} logo" style="width:100%;height:100%;object-fit:contain;">
                                 @else
                                     <span class="font-display" style="color:{{ $brand->accent_color }};font-size:0.8rem;">{{ substr($brand->name,0,2) }}</span>
                                 @endif

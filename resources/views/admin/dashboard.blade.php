@@ -152,7 +152,7 @@
                         <div class="card" style="overflow:hidden;transition:all 0.2s;position:relative;" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)';">
                             <div style="height:220px;overflow:hidden;position:relative;background:#1A1A1A;">
                                 @if($product->image)
-                                    <img src="{{ Storage::url($product->image) }}" alt="{{ $product->name }}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;">
+                                    <img src="{{ storage_asset_url($product->image) }}" alt="{{ $product->name }}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;">
                                 @else
                                     <div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;">
                                         <span class="font-display" style="color:#333;font-size:2.5rem;">{{ substr($product->name,0,2) }}</span>
@@ -213,7 +213,7 @@
                                 <div style="display:flex;align-items:center;gap:0.75rem;">
                                     <div style="width:36px;height:36px;border-radius:50%;background:{{ $brand->accent_color }}22;border:2px solid {{ $brand->accent_color }};display:flex;align-items:center;justify-content:center;overflow:hidden;">
                                         @if($brand->logo)
-                                            <img src="{{ Storage::url($brand->logo) }}" alt="{{ $brand->name }} logo" style="width:100%;height:100%;object-fit:contain;">
+                                            <img src="{{ storage_asset_url($brand->logo) }}" alt="{{ $brand->name }} logo" style="width:100%;height:100%;object-fit:contain;">
                                         @else
                                             <span class="font-display" style="color:{{ $brand->accent_color }};font-size:0.8rem;">{{ substr($brand->name,0,2) }}</span>
                                         @endif

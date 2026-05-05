@@ -36,7 +36,7 @@
                     <input type="file" id="logo" name="logo" accept="image/png,image/jpeg,image/webp">
                     @if($brand->logo)
                     <div style="margin-top:0.75rem;display:flex;align-items:center;gap:0.75rem;">
-                        <img src="{{ Storage::url($brand->logo) }}" alt="{{ $brand->name }} logo" style="width:48px;height:48px;border-radius:8px;object-fit:contain;border:1px solid var(--border);">
+                        <img src="{{ storage_asset_url($brand->logo) }}" alt="{{ $brand->name }} logo" style="width:48px;height:48px;border-radius:8px;object-fit:contain;border:1px solid var(--border);">
                         <span style="color:#aaa;font-size:0.9rem;">Current logo</span>
                     </div>
                     @endif
