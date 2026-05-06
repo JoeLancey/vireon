@@ -3,8 +3,10 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Brand;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Str;
 
 class BrandController extends Controller {
     public function index() {
@@ -24,7 +26,7 @@ class BrandController extends Controller {
         ]);
 
         if ($request->hasFile('logo')) {
-            $validated['logo'] = $request->file('logo')->store('brands', 'public');
+            $validated['logo'] = $this->storePublicImage($request->file('logo'), 'uploads/brands');
         }
 
         Brand::create($validated);
@@ -45,8 +47,8 @@ class BrandController extends Controller {
         ]);
 
         if ($request->hasFile('logo')) {
-            if ($brand->logo) Storage::disk('public')->delete($brand->logo);
-            $validated['logo'] = $request->file('logo')->store('brands', 'public');
+            $this->deleteImage($brand->logo);
+            $validated['logo'] = $this->storePublicImage($request->file('logo'), 'uploads/brands');
         }
 
         $brand->update($validated);
@@ -56,10 +58,45 @@ class BrandController extends Controller {
     }
 
     public function destroy(Brand $brand) {
-        if ($brand->logo) Storage::disk('public')->delete($brand->logo);
+        $this->deleteImage($brand->logo);
         $name = $brand->name;
         $brand->delete();
         return redirect()->route('admin.brands.index')
             ->with('success', '"' . $name . '" deleted successfully!');
+    }
+
+    private function storePublicImage(UploadedFile $file, string $directory): string
+    {
+        $directoryPath = public_path($directory);
+
+        if (! File::exists($directoryPath)) {
+            File::makeDirectory($directoryPath, 0755, true);
+        }
+
+        $fileName = (string) Str::uuid() . '.' . $file->getClientOriginalExtension();
+        $file->move($directoryPath, $fileName);
+
+        return trim($directory, '/') . '/' . $fileName;
+    }
+
+    private function deleteImage(?string $path): void
+    {
+        if (empty($path)) {
+            return;
+        }
+
+        $normalizedPath = ltrim($path, '/');
+
+        if (str_starts_with($normalizedPath, 'storage/')) {
+            $normalizedPath = substr($normalizedPath, strlen('storage/'));
+            \Illuminate\Support\Facades\Storage::disk('public')->delete($normalizedPath);
+            return;
+        }
+
+        $fullPath = public_path($normalizedPath);
+
+        if (File::exists($fullPath)) {
+            File::delete($fullPath);
+        }
     }
 }

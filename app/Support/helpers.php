@@ -13,10 +13,14 @@ if (! function_exists('storage_asset_url')) {
 
         $path = ltrim($path, '/');
 
+        if (str_starts_with($path, 'uploads/')) {
+            return '/' . $path;
+        }
+
         if (str_starts_with($path, 'storage/')) {
             $path = substr($path, strlen('storage/'));
         }
 
-        return asset('storage/' . $path);
+        return '/storage/' . $path;
     }
 }

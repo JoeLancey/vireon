@@ -5,8 +5,11 @@ use App\Http\Controllers\Controller;
 use App\Models\Product;
 use App\Models\Brand;
 use App\Models\ProductImage;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class ProductController extends Controller {
     public function index(Request $request) {
@@ -59,7 +62,7 @@ class ProductController extends Controller {
         ]);
 
         if ($request->hasFile('image')) {
-            $validated['image'] = $request->file('image')->store('products', 'public');
+            $validated['image'] = $this->storePublicImage($request->file('image'), 'uploads/products');
         }
 
         if ($request->hasFile('video')) {
@@ -72,7 +75,7 @@ class ProductController extends Controller {
 
         if ($request->hasFile('additional_images')) {
             foreach ($request->file('additional_images') as $image) {
-                $path = $image->store('products', 'public');
+                $path = $this->storePublicImage($image, 'uploads/products');
                 ProductImage::create([
                     'product_id' => $product->id,
                     'image_path' => $path
@@ -104,8 +107,8 @@ class ProductController extends Controller {
         ]);
 
         if ($request->hasFile('image')) {
-            if ($product->image) Storage::disk('public')->delete($product->image);
-            $validated['image'] = $request->file('image')->store('products', 'public');
+            $this->deleteImage($product->image);
+            $validated['image'] = $this->storePublicImage($request->file('image'), 'uploads/products');
         }
 
         if ($request->hasFile('video')) {
@@ -118,11 +121,11 @@ class ProductController extends Controller {
 
         if ($request->hasFile('additional_images')) {
             foreach ($product->images as $oldImage) {
-                Storage::disk('public')->delete($oldImage->image_path);
+                $this->deleteImage($oldImage->image_path);
                 $oldImage->delete();
             }
             foreach ($request->file('additional_images') as $image) {
-                $path = $image->store('products', 'public');
+                $path = $this->storePublicImage($image, 'uploads/products');
                 ProductImage::create([
                     'product_id' => $product->id,
                     'image_path' => $path
@@ -156,10 +159,10 @@ class ProductController extends Controller {
                 ->with('error', 'Only archived products can be permanently deleted.');
         }
 
-        if ($product->image) Storage::disk('public')->delete($product->image);
+        $this->deleteImage($product->image);
         if ($product->video) Storage::disk('public')->delete($product->video);
         foreach ($product->images as $img) {
-            Storage::disk('public')->delete($img->image_path);
+            $this->deleteImage($img->image_path);
             $img->delete();
         }
 
@@ -172,5 +175,40 @@ class ProductController extends Controller {
 
     public function show(Product $product) {
         return redirect()->route('admin.products.index');
+    }
+
+    private function storePublicImage(UploadedFile $file, string $directory): string
+    {
+        $directoryPath = public_path($directory);
+
+        if (! File::exists($directoryPath)) {
+            File::makeDirectory($directoryPath, 0755, true);
+        }
+
+        $fileName = (string) Str::uuid() . '.' . $file->getClientOriginalExtension();
+        $file->move($directoryPath, $fileName);
+
+        return trim($directory, '/') . '/' . $fileName;
+    }
+
+    private function deleteImage(?string $path): void
+    {
+        if (empty($path)) {
+            return;
+        }
+
+        $normalizedPath = ltrim($path, '/');
+
+        if (str_starts_with($normalizedPath, 'storage/')) {
+            $normalizedPath = substr($normalizedPath, strlen('storage/'));
+            Storage::disk('public')->delete($normalizedPath);
+            return;
+        }
+
+        $fullPath = public_path($normalizedPath);
+
+        if (File::exists($fullPath)) {
+            File::delete($fullPath);
+        }
     }
 }
